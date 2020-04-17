@@ -5,7 +5,7 @@ public class Movies {
     private String mTitle;
     private String mThumbnail;
     private String mOverView;
-    private String mUserRatings;
+    private int mUserRatings;
     private String mReleaseDate;
 
     /**
@@ -14,7 +14,7 @@ public class Movies {
     public Movies() {
     }
 
-    public Movies (String title, String thumbnail, String overView, String ratings, String releaseDate){
+    public Movies (String title, String thumbnail, String overView, int ratings, String releaseDate){
         mTitle = title;
         mThumbnail = thumbnail;
         mOverView = overView;
@@ -34,7 +34,7 @@ public class Movies {
         return mOverView;
     }
 
-    public String getUserRatings(){
+    public int getUserRatings(){
         return mUserRatings;
     }
 

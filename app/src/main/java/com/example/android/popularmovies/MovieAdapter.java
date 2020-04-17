@@ -20,7 +20,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
     private List<Movies> movies;
     private Context context;
 
-    public MovieAdapter(List<Movies> movies){
+    public MovieAdapter(List<Movies> movies, Context context){
+        this.context=context;
         this.movies = movies;
     }
 
@@ -59,6 +60,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
                 .load(movies.get(position).getThumbnail())
                 .into(holder.mMovieThumbnail);
         holder.mMovieTitle.setText(movies.get(position).getTitle());
+
+        //System.out.println("title: " + movies.get(position).getTitle() + " Thumbnail: " + movies.get(position).getThumbnail());
 
     }
 
