@@ -22,23 +22,23 @@ public class Movies {
         mReleaseDate = releaseDate;
     }
 
-    String getTitle(){
+    public String getTitle(){
         return mTitle;
     }
 
-    String getThumbnail(){
+    public String getThumbnail(){
         return mThumbnail;
     }
 
-    String getOverView(){
+    public String getOverView(){
         return mOverView;
     }
 
-    String getUserRatings(){
+    public String getUserRatings(){
         return mUserRatings;
     }
 
-    String getReleaseDate(){
+    public String getReleaseDate(){
         return mReleaseDate;
     }
 
