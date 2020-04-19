@@ -32,6 +32,21 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         this.mClickHandler = clickHandler;
     }
 
+    public void setData(List<Movies> data) {
+        this.movies=data;
+        notifyDataSetChanged();
+    }
+
+    public void clear() {
+        int size = movies.size();
+        if (size > 0) {
+            for (int i = 0; i < size; i++) {
+                movies.remove(0);
+            }
+
+            notifyItemRangeRemoved(0, size);
+        }
+    }
 
     public class MovieAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 

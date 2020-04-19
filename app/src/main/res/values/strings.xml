@@ -6,4 +6,16 @@
     <string name="movie_ratings">Ratings</string>
     <string name="movie_release_date">Release Date</string>
     <string name="movie_description">Description</string>
+
+    <!-- Build URL keys and values-->
+    <!-- Keys-->
+    <string name="api_key">api_key</string>
+    <string name="settings_sort_key">sort_by</string>
+    <!-- Values-->
+    <string name="api_key_value">3bc5452a3c521649c0b418627ea7ddab</string>
+    <string name="settings_sort_default" translatable="false">@string/settings_sort_popularity_value</string>
+    <!-- End build URL-->
+
+    <!-- Label for sort by popularity option [CHAR LIMIT=20] -->
+    <string name="settings_sort_popularity_value" translatable="false">popularity.desc</string>
 </resources>
