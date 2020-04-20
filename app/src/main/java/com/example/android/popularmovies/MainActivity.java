@@ -13,6 +13,9 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.example.android.popularmovies.model.Movies;
 import com.example.android.popularmovies.utils.NetworkUtils;
@@ -27,17 +30,22 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     private static final String BASE_MOVIEdb_REQUEST_URL =
             "https://api.themoviedb.org/3/discover/movie";
 
+    private ProgressBar mLoadingIndicator;
+    private RecyclerView mRecyclerView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mLoadingIndicator = (ProgressBar) findViewById(R.id.pb_loading_indicator);
 
         String tempMovie_dbURL = buildUrl(BASE_MOVIEdb_REQUEST_URL);
         loadMovieData(tempMovie_dbURL);
 
         List<Movies> movies = new ArrayList<>();
 
-        RecyclerView  mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview_movies);
+        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview_movies);
 
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this,3);
         mRecyclerView.setLayoutManager(gridLayoutManager);
@@ -83,6 +91,13 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     }
 
     public class FetchMoviesTask extends AsyncTask<String, Void, List<Movies>> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            mLoadingIndicator.setVisibility(View.VISIBLE);
+        }
+
         @Override
         protected List<Movies> doInBackground(String... urls) {
             // Don't perform the request if there are no URLs, or the first URL is null.
@@ -97,6 +112,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
         @Override
         protected void onPostExecute(List<Movies> movies) {
+            mLoadingIndicator.setVisibility(View.INVISIBLE);
 
             mMoviesAdapter.clear();
 

@@ -100,7 +100,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
                     .into(holder.mMovieThumbnail);
         }
         holder.mMovieTitle.setText(movies.get(position).getTitle());
-        System.out.println("title: " + movies.get(position).getTitle() + " HasThumbnail: " + thumbnail.contains("null"));
+        //System.out.println("title: " + movies.get(position).getTitle() + " HasThumbnail: " + thumbnail.contains("null"));
 
     }
 
