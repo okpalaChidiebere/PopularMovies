@@ -6,9 +6,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import com.example.android.popularmovies.model.Movies;
 import com.example.android.popularmovies.utils.NetworkUtils;
@@ -41,6 +45,25 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
          mMoviesAdapter = new MovieAdapter(movies, this, this);
 
         mRecyclerView.setAdapter(mMoviesAdapter);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.action_settings) {
+            openSettingsActivity();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -90,6 +113,15 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
 
     public String buildUrl(String locationQuery) {
+
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+
+        //Update URI to Use the User’s Preferred Sort Order
+        String sortBy  = sharedPrefs.getString(
+                getString(R.string.settings_sort_key),
+                getString(R.string.settings_sort_default_value)
+        );
+
         // parse breaks apart the URI string that's passed into its parameter
         Uri baseUri = Uri.parse(BASE_MOVIEdb_REQUEST_URL);
 
@@ -98,9 +130,16 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
         // Append query parameter and its value. For example, the `api-key=someRandomNumber`
         uriBuilder.appendQueryParameter(getString(R.string.api_key), getString(R.string.api_key_value))
-                .appendQueryParameter(getString(R.string.settings_sort_key), getString(R.string.settings_sort_default));
+                .appendQueryParameter(getString(R.string.settings_sort_key), sortBy);
 
         //https://api.themoviedb.org/3/discover/movie?api_key=someNUmber&sort_by=popularity.desc
         return uriBuilder.toString();
+    }
+
+    private void openSettingsActivity(){
+        Context context = this;
+        Class destinationClass = SettingsActivity.class;
+        Intent intentToStartSettingsActivity = new Intent(context, destinationClass);
+        startActivity(intentToStartSettingsActivity);
     }
 }
