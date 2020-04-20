@@ -21,6 +21,14 @@ public class NetworkUtils {
 
     public static final String LOG_TAG = NetworkUtils.class.getName();
 
+    /*JSON parse Keys*/
+    private static final String KEY_RESULTS = "results";
+    private static final String KEY_TITLE = "title";
+    private static final String KEY_OVERVIEW = "overview";
+    private static final String KEY_VOTE_AVERAGE = "vote_average";
+    private static final String KEY_RELEASE_DATE = "release_date";
+    private static final String KEY_POSTER_PATH = "poster_path";
+
     private NetworkUtils() {
     }
 
@@ -31,17 +39,17 @@ public class NetworkUtils {
         try {
             JSONObject jsonObjRoot = new JSONObject(newsJSONResponse);
 
-            JSONArray results = jsonObjRoot.getJSONArray("results");
+            JSONArray results = jsonObjRoot.getJSONArray(KEY_RESULTS);
 
             for (int i = 0; i < results.length(); i++) {
 
                 JSONObject currentArrayPosition = results.getJSONObject(i);
 
-                String movieTitle = currentArrayPosition.getString("title");
-                String overview = currentArrayPosition.getString("overview");
-                int rating = currentArrayPosition.getInt("vote_average");
-                String releaseDate = currentArrayPosition.getString("release_date");
-                String thumbnail = buildImageUrl(currentArrayPosition.getString("poster_path"));
+                String movieTitle = currentArrayPosition.getString(KEY_TITLE);
+                String overview = currentArrayPosition.getString(KEY_OVERVIEW);
+                int rating = currentArrayPosition.getInt(KEY_VOTE_AVERAGE);
+                String releaseDate = currentArrayPosition.getString(KEY_RELEASE_DATE);
+                String thumbnail = buildImageUrl(currentArrayPosition.getString(KEY_POSTER_PATH));
 
                 Movies newMoviesObjectInstance = new Movies(movieTitle, thumbnail, overview, rating, releaseDate);
                 movies.add(newMoviesObjectInstance);

@@ -13,6 +13,13 @@ import com.squareup.picasso.Picasso;
 
 public class MovieDetails extends AppCompatActivity {
 
+    /*Intent extra names*/
+    private static final String EXTRA_TITLE = "MOVIE_TITLE";
+    private static final String EXTRA_POSTER_PATH = "MOVIE_THUMBNAIL";
+    private static final String EXTRA_OVERVIEW = "MOVIE_OVERVIEW";
+    private static final String EXTRA_VOTE_AVERAGE = "MOVIE_RATINGS";
+    private static final String EXTRA_RELEASE_DATE = "MOVIE_RELEASE_DATE";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,13 +47,13 @@ public class MovieDetails extends AppCompatActivity {
 
         if (intentThatStartedThisActivity != null) {
 
-            if (intentThatStartedThisActivity.hasExtra("MOVIE_TITLE")) {
-                mMovieTitle = intentThatStartedThisActivity.getStringExtra("MOVIE_TITLE");
+            if (intentThatStartedThisActivity.hasExtra(EXTRA_TITLE)) {
+                mMovieTitle = intentThatStartedThisActivity.getStringExtra(EXTRA_TITLE);
                 titleView.setText(mMovieTitle);
             }
 
-            if (intentThatStartedThisActivity.hasExtra("MOVIE_THUMBNAIL")) {
-                mThumbnail = intentThatStartedThisActivity.getStringExtra("MOVIE_THUMBNAIL");
+            if (intentThatStartedThisActivity.hasExtra(EXTRA_POSTER_PATH)) {
+                mThumbnail = intentThatStartedThisActivity.getStringExtra(EXTRA_POSTER_PATH);
                 if(mThumbnail.contains("null")) {
                     thumbnailView.setVisibility(View.INVISIBLE);
                     insertImageView.setVisibility(View.VISIBLE);
@@ -63,18 +70,18 @@ public class MovieDetails extends AppCompatActivity {
                         .into(thumbnailBackgroundView);
             }
 
-            if (intentThatStartedThisActivity.hasExtra("MOVIE_OVERVIEW")) {
-                mOverview = intentThatStartedThisActivity.getStringExtra("MOVIE_OVERVIEW");
+            if (intentThatStartedThisActivity.hasExtra(EXTRA_OVERVIEW)) {
+                mOverview = intentThatStartedThisActivity.getStringExtra(EXTRA_OVERVIEW);
                 descriptionView.setText(mOverview);
             }
 
-            if (intentThatStartedThisActivity.hasExtra("MOVIE_RATINGS")) {
-                mRatings = intentThatStartedThisActivity.getIntExtra("MOVIE_RATINGS",0);
+            if (intentThatStartedThisActivity.hasExtra(EXTRA_VOTE_AVERAGE)) {
+                mRatings = intentThatStartedThisActivity.getIntExtra(EXTRA_VOTE_AVERAGE,0);
                 ratingsView.setText(String.valueOf(mRatings)+"/10");
             }
 
-            if (intentThatStartedThisActivity.hasExtra("MOVIE_RELEASE_DATE")) {
-                releaseDate = intentThatStartedThisActivity.getStringExtra("MOVIE_RELEASE_DATE");
+            if (intentThatStartedThisActivity.hasExtra(EXTRA_RELEASE_DATE)) {
+                releaseDate = intentThatStartedThisActivity.getStringExtra(EXTRA_RELEASE_DATE);
                 //SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MMM-dd");
                 //Date dt_1 = sdf.parse(releaseDate);
                 //Date dt_1 = new Date(releaseDate);

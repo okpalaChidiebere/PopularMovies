@@ -15,7 +15,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import com.example.android.popularmovies.model.Movies;
 import com.example.android.popularmovies.utils.NetworkUtils;
@@ -32,6 +31,13 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
     private ProgressBar mLoadingIndicator;
     private RecyclerView mRecyclerView;
+
+    /*Puts extra name strings*/
+    private static final String EXTRA_TITLE = "MOVIE_TITLE";
+    private static final String EXTRA_POSTER_PATH = "MOVIE_THUMBNAIL";
+    private static final String EXTRA_OVERVIEW = "MOVIE_OVERVIEW";
+    private static final String EXTRA_VOTE_AVERAGE = "MOVIE_RATINGS";
+    private static final String EXTRA_RELEASE_DATE = "MOVIE_RELEASE_DATE";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,11 +87,11 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
         Class destinationClass = MovieDetails.class;
         Intent intentToStartDetailActivity = new Intent(context, destinationClass);
-        intentToStartDetailActivity.putExtra("MOVIE_TITLE", movie.getTitle());
-        intentToStartDetailActivity.putExtra("MOVIE_THUMBNAIL", movie.getThumbnail());
-        intentToStartDetailActivity.putExtra("MOVIE_OVERVIEW", movie.getOverView());
-        intentToStartDetailActivity.putExtra("MOVIE_RATINGS", movie.getUserRatings());
-        intentToStartDetailActivity.putExtra("MOVIE_RELEASE_DATE", movie.getReleaseDate());
+        intentToStartDetailActivity.putExtra(EXTRA_TITLE, movie.getTitle());
+        intentToStartDetailActivity.putExtra(EXTRA_POSTER_PATH, movie.getThumbnail());
+        intentToStartDetailActivity.putExtra(EXTRA_OVERVIEW, movie.getOverView());
+        intentToStartDetailActivity.putExtra(EXTRA_VOTE_AVERAGE, movie.getUserRatings());
+        intentToStartDetailActivity.putExtra(EXTRA_RELEASE_DATE, movie.getReleaseDate());
 
         startActivity(intentToStartDetailActivity);
     }
