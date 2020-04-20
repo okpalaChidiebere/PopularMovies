@@ -15,7 +15,9 @@
             android:screenOrientation="portrait"
             android:parentActivityName=".MainActivity">
         </activity>
-        <activity android:name=".MovieDetails" />
+        <activity android:name=".MovieDetails"
+            android:parentActivityName=".MainActivity"
+            android:label="@string/movie_details_title"/>
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

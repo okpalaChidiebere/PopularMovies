@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -17,9 +18,11 @@ public class MovieDetails extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_details);
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         //layout views
         TextView titleView, descriptionView, releaseDateView, ratingsView;
-        ImageView thumbnailView, thumbnailBackgroundView;
+        ImageView thumbnailView, insertImageView, thumbnailBackgroundView;
 
         //intent variables
         String mMovieTitle, mThumbnail, mOverview, releaseDate;
@@ -28,6 +31,7 @@ public class MovieDetails extends AppCompatActivity {
         thumbnailBackgroundView = (ImageView) findViewById(R.id.tv_detail_thumbnail_background);
         titleView = (TextView) findViewById(R.id.tv_detail_title);
         thumbnailView = (ImageView) findViewById(R.id.tv_detail_thumbnail);
+        insertImageView = (ImageView) findViewById(R.id.tv_detail_insertImage);
         descriptionView = (TextView) findViewById(R.id.tv_detail_description);
         ratingsView = (TextView) findViewById(R.id.tv_detail_ratings);
         releaseDateView = (TextView) findViewById(R.id.tv_detail_releaseDate);
@@ -43,13 +47,20 @@ public class MovieDetails extends AppCompatActivity {
 
             if (intentThatStartedThisActivity.hasExtra("MOVIE_THUMBNAIL")) {
                 mThumbnail = intentThatStartedThisActivity.getStringExtra("MOVIE_THUMBNAIL");
-                Picasso.with(this)
-                        .load(mThumbnail)
-                        .into(thumbnailBackgroundView);
+                if(mThumbnail.contains("null")) {
+                    thumbnailView.setVisibility(View.INVISIBLE);
+                    insertImageView.setVisibility(View.VISIBLE);
+                }else {
+                    thumbnailView.setVisibility(View.VISIBLE);
+                    insertImageView.setVisibility(View.INVISIBLE);
+                    Picasso.with(this)
+                            .load(mThumbnail)
+                            .into(thumbnailView);
+                }
 
                 Picasso.with(this)
                         .load(mThumbnail)
-                        .into(thumbnailView);
+                        .into(thumbnailBackgroundView);
             }
 
             if (intentThatStartedThisActivity.hasExtra("MOVIE_OVERVIEW")) {
@@ -59,7 +70,7 @@ public class MovieDetails extends AppCompatActivity {
 
             if (intentThatStartedThisActivity.hasExtra("MOVIE_RATINGS")) {
                 mRatings = intentThatStartedThisActivity.getIntExtra("MOVIE_RATINGS",0);
-                ratingsView.setText(String.valueOf(mRatings));
+                ratingsView.setText(String.valueOf(mRatings)+"/10");
             }
 
             if (intentThatStartedThisActivity.hasExtra("MOVIE_RELEASE_DATE")) {

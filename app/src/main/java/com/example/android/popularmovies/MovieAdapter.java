@@ -51,12 +51,14 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
     public class MovieAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         public final ImageView mMovieThumbnail;
+        public final ImageView mInsertImage;
         public final TextView mMovieTitle;
 
         public MovieAdapterViewHolder(View view){
             super(view);
 
             mMovieThumbnail = (ImageView) view.findViewById(R.id.tv_thumbnail);
+            mInsertImage = (ImageView) view.findViewById(R.id.tv_insertImage);
             mMovieTitle = (TextView) view.findViewById(R.id.tv_movie_title);
 
             view.setOnClickListener(this);
@@ -86,12 +88,19 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
     @Override
     public void onBindViewHolder(@NonNull MovieAdapterViewHolder holder, int position) {
 
-        Picasso.with(context)
-                .load(movies.get(position).getThumbnail())
-                .into(holder.mMovieThumbnail);
+        String thumbnail = movies.get(position).getThumbnail();
+        if(thumbnail.contains("null")) {
+            holder.mMovieThumbnail.setVisibility(View.INVISIBLE);
+            holder.mInsertImage.setVisibility(View.VISIBLE);
+        }else {
+            holder.mMovieThumbnail.setVisibility(View.VISIBLE);
+            holder.mInsertImage.setVisibility(View.INVISIBLE);
+            Picasso.with(context)
+                    .load(movies.get(position).getThumbnail())
+                    .into(holder.mMovieThumbnail);
+        }
         holder.mMovieTitle.setText(movies.get(position).getTitle());
-
-        //System.out.println("title: " + movies.get(position).getTitle() + " Thumbnail: " + movies.get(position).getThumbnail());
+        System.out.println("title: " + movies.get(position).getTitle() + " HasThumbnail: " + thumbnail.contains("null"));
 
     }
 

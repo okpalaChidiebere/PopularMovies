@@ -25,8 +25,17 @@
                 android:id="@+id/tv_thumbnail"
                 android:layout_width="match_parent"
                 android:layout_height="180dp"
-                android:background="@color/colorAccent"
                 android:scaleType="fitXY"/>
+
+            <!-- make visible if there is no image -->
+            <ImageView
+                android:id="@+id/tv_insertImage"
+                android:layout_width="match_parent"
+                android:layout_height="180dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/insert_photo"
+                android:background="@color/colorDivider"
+                android:visibility="invisible"/>
 
             <TextView
                 android:id="@+id/tv_movie_title"

@@ -42,4 +42,5 @@
     <!-- End Menu item-->
 
     <string name="settings_title">Movies Settings</string>
+    <string name="movie_details_title">Movie Details</string>
 </resources>

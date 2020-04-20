@@ -35,6 +35,16 @@
                     android:scaleType="fitXY"
                     android:src="@drawable/ic_launcher_background" />
 
+                <!-- make visible if there is no image -->
+                <ImageView
+                    android:id="@+id/tv_detail_insertImage"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/insert_photo"
+                    android:background="@color/colorDivider"
+                    android:visibility="invisible"/>
+
             </androidx.cardview.widget.CardView>
 
             <LinearLayout
