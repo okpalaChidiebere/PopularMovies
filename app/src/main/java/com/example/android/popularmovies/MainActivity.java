@@ -1,6 +1,11 @@
 package com.example.android.popularmovies;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.loader.app.LoaderManager;
+import androidx.loader.content.AsyncTaskLoader;
+import androidx.loader.content.Loader;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -8,7 +13,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.Menu;
@@ -22,7 +26,8 @@ import com.example.android.popularmovies.utils.NetworkUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieAdapterOnClickHandler {
+public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieAdapterOnClickHandler,
+        LoaderManager.LoaderCallbacks<List<Movies>> {
 
     private  MovieAdapter mMoviesAdapter;
 
@@ -39,6 +44,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     private static final String EXTRA_VOTE_AVERAGE = "MOVIE_RATINGS";
     private static final String EXTRA_RELEASE_DATE = "MOVIE_RELEASE_DATE";
 
+    private static final int FORECAST_LOADER_ID = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,8 +53,11 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
         mLoadingIndicator = (ProgressBar) findViewById(R.id.pb_loading_indicator);
 
-        String tempMovie_dbURL = buildUrl(BASE_MOVIEdb_REQUEST_URL);
-        loadMovieData(tempMovie_dbURL);
+        int loaderId = FORECAST_LOADER_ID;
+        LoaderManager.LoaderCallbacks<List<Movies>> callback = MainActivity.this;
+        Bundle bundleForLoader = null;
+        LoaderManager loaderManager = LoaderManager.getInstance(this);
+        loaderManager.initLoader(loaderId, bundleForLoader, callback);
 
         List<Movies> movies = new ArrayList<>();
 
@@ -96,40 +106,58 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         startActivity(intentToStartDetailActivity);
     }
 
-    public class FetchMoviesTask extends AsyncTask<String, Void, List<Movies>> {
+    @NonNull
+    @Override
+    public Loader<List<Movies>> onCreateLoader(int id, @Nullable Bundle args) {
+        return new AsyncTaskLoader<List<Movies>>(this) {
 
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            mLoadingIndicator.setVisibility(View.VISIBLE);
-        }
+            /* This String array will hold and help cache our weather data */
+            List<Movies> mMovies = null;
 
-        @Override
-        protected List<Movies> doInBackground(String... urls) {
-            // Don't perform the request if there are no URLs, or the first URL is null.
-            if (urls.length < 1 || urls[0] == null) {
-                return null;
+            @Override
+            protected void onStartLoading() {
+                if (mMovies != null) {
+                    deliverResult(mMovies);
+                } else {
+                    mLoadingIndicator.setVisibility(View.VISIBLE);
+                    forceLoad();
+                }
             }
 
-            // Create a list of movies.
-            List<Movies> result = NetworkUtils.fetchEarthquakeData(urls[0]);
-            return result;
-        }
+            @Nullable
+            @Override
+            public List<Movies> loadInBackground() {
 
-        @Override
-        protected void onPostExecute(List<Movies> movies) {
-            mLoadingIndicator.setVisibility(View.INVISIBLE);
+                String url = buildUrl(BASE_MOVIEdb_REQUEST_URL);
+                // Perform the network request, parse the response, and extract a list of earthquakes.
+                List<Movies> movies = NetworkUtils.fetchEarthquakeData(url);
 
-            mMoviesAdapter.clear();
-
-            if (movies != null && !movies.isEmpty()) {
-                mMoviesAdapter.setData(movies);
+                return movies;
             }
+
+            /*The LoaderManager initialized are designed to reload if the user navigates away from the
+            activity and them returns. We can avoid the extra load if we don't find it desirable by
+            caching and redelivering our existing result.*/
+            public void deliverResult(List<Movies> data) {
+                mMovies = data;
+                super.deliverResult(data);
+            }
+        };
+    }
+
+    @Override
+    public void onLoadFinished(@NonNull Loader<List<Movies>> loader, List<Movies> data) {
+        mLoadingIndicator.setVisibility(View.INVISIBLE);
+        mMoviesAdapter.setData(data);
+        if (data != null && !data.isEmpty()) {
+            mMoviesAdapter.setData(data);
         }
     }
 
-    private void loadMovieData(String theMoviedb_url) {
-        new FetchMoviesTask().execute(theMoviedb_url);
+    @Override
+    public void onLoaderReset(@NonNull Loader<List<Movies>> loader) {
+        // Loader reset, so we can clear out our existing data.
+        mMoviesAdapter.clear();
     }
 
 
