@@ -20,6 +20,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 
+import com.example.android.popularmovies.database.AppDatabase;
 import com.example.android.popularmovies.model.Movies;
 import com.example.android.popularmovies.utils.NetworkUtils;
 
@@ -46,10 +47,14 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
     private static final int FORECAST_LOADER_ID = 0;
 
+    private AppDatabase mDb;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mDb = AppDatabase.getInstance(getApplicationContext());
 
         mLoadingIndicator = (ProgressBar) findViewById(R.id.pb_loading_indicator);
 
@@ -128,7 +133,14 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
             @Override
             public List<Movies> loadInBackground() {
 
-                String url = buildUrl(BASE_MOVIEdb_REQUEST_URL);
+                /*sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this)
+                String sortBy  = sharedPrefs.getString(
+                        getString(R.string.settings_sort_key),
+                        getString(R.string.settings_sort_default_value)
+                );*/
+
+                //String url = buildUrl(BASE_MOVIEdb_REQUEST_URL);
+                String url = NetworkUtils.buildMovieUrl(getSortPreference());
                 // Perform the network request, parse the response, and extract a list of earthquakes.
                 List<Movies> movies = NetworkUtils.fetchEarthquakeData(url);
 
@@ -148,10 +160,14 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     @Override
     public void onLoadFinished(@NonNull Loader<List<Movies>> loader, List<Movies> data) {
         mLoadingIndicator.setVisibility(View.INVISIBLE);
-        mMoviesAdapter.setData(data);
+        //mMoviesAdapter.setData(data);
+        mMoviesAdapter.setData(mDb.movieDao().getAllMovies());
         if (data != null && !data.isEmpty()) {
-            mMoviesAdapter.setData(data);
+            //mMoviesAdapter.setData(data);
+            mMoviesAdapter.setData(mDb.movieDao().getAllMovies());
         }
+
+
     }
 
     @Override
@@ -162,8 +178,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
 
 
-    public String buildUrl(String locationQuery) {
-
+    public String getSortPreference(){
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 
         //Update URI to Use the User’s Preferred Sort Order
@@ -172,18 +187,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                 getString(R.string.settings_sort_default_value)
         );
 
-        // parse breaks apart the URI string that's passed into its parameter
-        Uri baseUri = Uri.parse(BASE_MOVIEdb_REQUEST_URL);
+        return sortBy;
 
-        // buildUpon prepares the baseUri that we just parsed so we can add query parameters to it
-        Uri.Builder uriBuilder = baseUri.buildUpon();
-
-        // Append query parameter and its value. For example, the `api-key=someRandomNumber`
-        uriBuilder.appendQueryParameter(getString(R.string.api_key), getString(R.string.api_key_value))
-                .appendQueryParameter(getString(R.string.settings_sort_key), sortBy);
-
-        //https://api.themoviedb.org/3/discover/movie?api_key=someNUmber&sort_by=popularity.desc
-        return uriBuilder.toString();
     }
 
     private void openSettingsActivity(){

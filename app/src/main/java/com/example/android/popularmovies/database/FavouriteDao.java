@@ -1,11 +1,15 @@
 package com.example.android.popularmovies.database;
 
+import com.example.android.popularmovies.model.Favourite;
+
 import java.util.List;
 
+import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
 
+@Dao
 public interface FavouriteDao {
 
     @Query("SELECT * FROM favourite")

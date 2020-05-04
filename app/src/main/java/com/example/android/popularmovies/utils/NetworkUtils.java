@@ -1,7 +1,12 @@
 package com.example.android.popularmovies.utils;
 
+import android.content.SharedPreferences;
+import android.net.Uri;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.example.android.popularmovies.R;
+import com.example.android.popularmovies.database.AppDatabase;
 import com.example.android.popularmovies.model.Movies;
 
 import org.json.JSONArray;
@@ -29,6 +34,21 @@ public class NetworkUtils {
     private static final String KEY_RELEASE_DATE = "release_date";
     private static final String KEY_POSTER_PATH = "poster_path";
 
+
+    /*Url components*/
+    private static final String BASE_MOVIEdb_REQUEST_URL =
+            "https://api.themoviedb.org/3";
+    private static final String DISCOVER_MOVIE = "discover/movie";
+    // The url component to access movies
+    private static final String MOVIE_URL = "movie/";
+    // The url component to access videos
+    private static final String VIDEO = "videos";
+    // The url component to access reviews
+    private static final String REVIEW = "reviews";
+    private static final String API_KEY = "api_key";
+    private static final String API_KEY_VALUE = "3bc5452a3c521649c0b418627ea7ddab";
+    private static final String SORT_BY_KEY = "sort_by";
+
     private NetworkUtils() {
     }
 
@@ -54,6 +74,8 @@ public class NetworkUtils {
                 Movies newMoviesObjectInstance = new Movies(movieTitle, thumbnail, overview, rating, releaseDate);
                 movies.add(newMoviesObjectInstance);
 
+                //long rowId = AppDatabase.getInstance().messageDao().insert(newMoviesObjectInstance);
+
                // System.out.println("title: " + movieTitle + " overview: " + overview + " vote: " + rating + " releaseDate: " + releaseDate + " image: " + thumbnail);
 
             }
@@ -77,6 +99,54 @@ public class NetworkUtils {
 
 
         return FINAL_IMAGE_URL;
+    }
+
+    public static String buildMovieUrl(String sortBy) {
+
+        // parse breaks apart the URI string that's passed into its parameter
+        Uri baseUri = Uri.parse(BASE_MOVIEdb_REQUEST_URL);
+
+        // buildUpon prepares the baseUri that we just parsed so we can add query parameters to it
+        Uri.Builder uriBuilder = baseUri.buildUpon();
+
+        // Append query parameter and its value. For example, the `api-key=someRandomNumber`
+        uriBuilder.appendEncodedPath(DISCOVER_MOVIE)
+                .appendQueryParameter(API_KEY, API_KEY_VALUE)
+                .appendQueryParameter(SORT_BY_KEY, sortBy);
+
+        //https://api.themoviedb.org/3/discover/movie?api_key=someNUmber&sort_by=popularity.desc
+        return uriBuilder.toString();
+    }
+
+    public static String buildReviewUrl(long movieID){
+        // parse breaks apart the URI string that's passed into its parameter
+        Uri baseUri = Uri.parse(BASE_MOVIEdb_REQUEST_URL);
+
+        // buildUpon prepares the baseUri that we just parsed so we can add query parameters to it
+        Uri.Builder uriBuilder = baseUri.buildUpon();
+        uriBuilder.appendEncodedPath(MOVIE_URL)
+                .appendEncodedPath(Long.toString(movieID))
+                .appendEncodedPath(REVIEW)
+                .appendQueryParameter(API_KEY, API_KEY_VALUE)
+                .build();
+
+        //http://api.themoviedb.org/3/movie/419704/reviews?api_key=someNumber
+        return uriBuilder.toString();
+    }
+
+    public static String buildTrailerUrl(long movieID){
+        Uri baseUri = Uri.parse(BASE_MOVIEdb_REQUEST_URL);
+
+        // buildUpon prepares the baseUri that we just parsed so we can add query parameters to it
+        Uri.Builder uriBuilder = baseUri.buildUpon();
+        uriBuilder.appendEncodedPath(MOVIE_URL)
+                .appendEncodedPath(Long.toString(movieID))
+                .appendEncodedPath(VIDEO)
+                .appendQueryParameter(API_KEY, API_KEY_VALUE)
+                .build();
+
+        //http://api.themoviedb.org/3/movie/419704/videos?api_key=someNumber
+        return uriBuilder.toString();
     }
 
     /**
