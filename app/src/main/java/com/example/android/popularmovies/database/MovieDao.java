@@ -1,7 +1,5 @@
 package com.example.android.popularmovies.database;
 
-import android.graphics.Movie;
-
 import com.example.android.popularmovies.model.Movies;
 
 import java.util.List;

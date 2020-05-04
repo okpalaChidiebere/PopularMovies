@@ -15,6 +15,7 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -29,6 +30,10 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieAdapterOnClickHandler,
         LoaderManager.LoaderCallbacks<List<Movies>> {
+
+    private static final String LOG_TAG = MainActivity.class.getSimpleName();
+
+
 
     private  MovieAdapter mMoviesAdapter;
 
@@ -121,11 +126,16 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
             @Override
             protected void onStartLoading() {
-                if (mMovies != null) {
+
+                mMovies=mDb.movieDao().getAllMovies();
+
+                if (mMovies.size()>0) {
                     deliverResult(mMovies);
+                    Log.d(LOG_TAG, "exists"+ mMovies.size());
                 } else {
                     mLoadingIndicator.setVisibility(View.VISIBLE);
                     forceLoad();
+                    Log.d(LOG_TAG, "forceLoad");
                 }
             }
 
@@ -133,13 +143,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
             @Override
             public List<Movies> loadInBackground() {
 
-                /*sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this)
-                String sortBy  = sharedPrefs.getString(
-                        getString(R.string.settings_sort_key),
-                        getString(R.string.settings_sort_default_value)
-                );*/
-
-                //String url = buildUrl(BASE_MOVIEdb_REQUEST_URL);
                 String url = NetworkUtils.buildMovieUrl(getSortPreference());
                 // Perform the network request, parse the response, and extract a list of earthquakes.
                 List<Movies> movies = NetworkUtils.fetchEarthquakeData(url);
@@ -160,11 +163,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     @Override
     public void onLoadFinished(@NonNull Loader<List<Movies>> loader, List<Movies> data) {
         mLoadingIndicator.setVisibility(View.INVISIBLE);
-        //mMoviesAdapter.setData(data);
-        mMoviesAdapter.setData(mDb.movieDao().getAllMovies());
         if (data != null && !data.isEmpty()) {
-            //mMoviesAdapter.setData(data);
-            mMoviesAdapter.setData(mDb.movieDao().getAllMovies());
+            mMoviesAdapter.setData(data);
         }
 
 
