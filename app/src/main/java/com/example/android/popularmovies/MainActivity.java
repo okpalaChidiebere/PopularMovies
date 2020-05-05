@@ -3,6 +3,9 @@ package com.example.android.popularmovies;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.content.AsyncTaskLoader;
 import androidx.loader.content.Loader;
@@ -12,7 +15,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -22,6 +24,7 @@ import android.view.View;
 import android.widget.ProgressBar;
 
 import com.example.android.popularmovies.database.AppDatabase;
+import com.example.android.popularmovies.database.MovieViewModel;
 import com.example.android.popularmovies.model.Movies;
 import com.example.android.popularmovies.utils.NetworkUtils;
 
@@ -79,6 +82,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
          mMoviesAdapter = new MovieAdapter(movies, this, this);
 
         mRecyclerView.setAdapter(mMoviesAdapter);
+
+        //retrieveTasks();
     }
 
     @Override
@@ -122,21 +127,24 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         return new AsyncTaskLoader<List<Movies>>(this) {
 
             /* This String array will hold and help cache our weather data */
-            List<Movies> mMovies = null;
+            LiveData<List<Movies>> mMovies = null;
 
             @Override
             protected void onStartLoading() {
 
                 mMovies=mDb.movieDao().getAllMovies();
 
-                if (mMovies.size()>0) {
-                    deliverResult(mMovies);
-                    Log.d(LOG_TAG, "exists"+ mMovies.size());
+                if (mMovies != null) {
+                    //deliverResult(mMovies);
+
+                    retrieveMovies();
+                    Log.d(LOG_TAG, "exists");
                 } else {
                     mLoadingIndicator.setVisibility(View.VISIBLE);
                     forceLoad();
                     Log.d(LOG_TAG, "forceLoad");
                 }
+
             }
 
             @Nullable
@@ -153,10 +161,10 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
             /*The LoaderManager initialized are designed to reload if the user navigates away from the
             activity and them returns. We can avoid the extra load if we don't find it desirable by
             caching and redelivering our existing result.*/
-            public void deliverResult(List<Movies> data) {
+            /*public void deliverResult(List<Movies>  data) {
                 mMovies = data;
                 super.deliverResult(data);
-            }
+            }*/
         };
     }
 
@@ -197,4 +205,22 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         Intent intentToStartSettingsActivity = new Intent(context, destinationClass);
         startActivity(intentToStartSettingsActivity);
     }
+
+    private void retrieveMovies() {
+        Log.d(LOG_TAG, "Actively retrieving the movies from the DataBase");
+
+        //LiveData<List<Movies>> movies = mDb.movieDao().getAllMovies();
+
+        MovieViewModel viewModel = new ViewModelProvider(this).get(MovieViewModel.class);
+
+        viewModel.getMovies().observe(this, new Observer<List<Movies>>() {
+        //movies.observe(this, new Observer<List<Movies>>() {
+            @Override
+            public void onChanged(@Nullable List<Movies> moviesList) {
+                Log.d(LOG_TAG, "Receiving database update from LiveData in ViewModel");
+                mMoviesAdapter.setData(moviesList);
+            }
+        });
+    }
+
 }

@@ -1,10 +1,13 @@
 package com.example.android.popularmovies.database;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.example.android.popularmovies.R;
 import com.example.android.popularmovies.model.Favourite;
 import com.example.android.popularmovies.model.Movies;
 import com.example.android.popularmovies.model.Review;
@@ -23,8 +26,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
         Review.class, Favourite.class}, version = 1, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
 
-    private static final String BASE_MOVIEdb_REQUEST_URL =
-            "https://api.themoviedb.org/3";
+    private static Context mContext;
 
     private static final String LOG_TAG = AppDatabase.class.getSimpleName();
     private static final Object LOCK = new Object();
@@ -32,6 +34,9 @@ public abstract class AppDatabase extends RoomDatabase {
     private static AppDatabase sInstance;
 
     public static synchronized AppDatabase getInstance(final Context context) {
+
+        mContext=context;
+
         if (sInstance == null) {
             synchronized (LOCK) {
                 Log.d(LOG_TAG, "Creating new database instance");
@@ -73,7 +78,7 @@ public abstract class AppDatabase extends RoomDatabase {
         }
     };*/
 
-    private static class PopulateDatabaseAsyncTask extends AsyncTask<Void, Void, Void>{
+    public static class PopulateDatabaseAsyncTask extends AsyncTask<Void, Void, Void>{
         private MovieDao movieDao;
         private PopulateDatabaseAsyncTask(AppDatabase db){
             movieDao = db.movieDao();
@@ -82,7 +87,12 @@ public abstract class AppDatabase extends RoomDatabase {
         @Override
         protected Void doInBackground(Void... voids) {
 
-            String url = NetworkUtils.buildMovieUrl("popularity.desc");
+            SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(mContext);
+            String sortBy  = sharedPrefs.getString(
+                    mContext.getString(R.string.settings_sort_key),
+                    mContext.getString(R.string.settings_sort_default_value));
+
+            String url = NetworkUtils.buildMovieUrl(sortBy);
             List<Movies> movies = NetworkUtils.fetchEarthquakeData(url);
             //System.out.println("test: " + movies.get(0).getTitle());
             Log.d(LOG_TAG, "test: " + movies.get(0).getTitle());

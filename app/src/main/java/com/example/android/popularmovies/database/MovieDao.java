@@ -14,7 +14,7 @@ import androidx.room.Query;
 public interface MovieDao {
 
     @Query("SELECT * FROM movies")
-    List<Movies> getAllMovies();
+    LiveData<List<Movies>> getAllMovies();
 
     @Query("SELECT * FROM movies WHERE movie_id = :id LIMIT 1")
     Movies findMovieById(int id);

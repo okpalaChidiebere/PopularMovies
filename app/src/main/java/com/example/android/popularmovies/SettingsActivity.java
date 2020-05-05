@@ -10,7 +10,11 @@ import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 
+import com.example.android.popularmovies.database.AppDatabase;
+
 public class SettingsActivity extends AppCompatActivity {
+
+    private AppDatabase mDb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +52,6 @@ public class SettingsActivity extends AppCompatActivity {
             CharSequence[] labels = listPreference.getEntries();
             preference.setSummary(labels[prefIndex]);
         }
-
         return true;
     }
 
