@@ -1,13 +1,9 @@
 package com.example.android.popularmovies.database;
 
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.AsyncTask;
-import android.preference.PreferenceManager;
 import android.util.Log;
 
-import com.example.android.popularmovies.R;
 import com.example.android.popularmovies.model.Favourite;
 import com.example.android.popularmovies.model.Movies;
 import com.example.android.popularmovies.model.Review;
@@ -80,30 +76,42 @@ public abstract class AppDatabase extends RoomDatabase {
 
     public static class PopulateDatabaseAsyncTask extends AsyncTask<Void, Void, Void>{
         private MovieDao movieDao;
-        private PopulateDatabaseAsyncTask(AppDatabase db){
+        private ReviewDao reviewDao;
+        private TrailerDao trailerDao;
+        public PopulateDatabaseAsyncTask(AppDatabase db){
             movieDao = db.movieDao();
+            reviewDao = db.reviewDao();
+            trailerDao = db.trailerDao();
+
         }
 
         @Override
         protected Void doInBackground(Void... voids) {
 
-            SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(mContext);
-            String sortBy  = sharedPrefs.getString(
-                    mContext.getString(R.string.settings_sort_key),
-                    mContext.getString(R.string.settings_sort_default_value));
-
-            String url = NetworkUtils.buildMovieUrl(sortBy);
+            String url = NetworkUtils.buildMovieUrl("popularity.desc");
             List<Movies> movies = NetworkUtils.fetchEarthquakeData(url);
-            //System.out.println("test: " + movies.get(0).getTitle());
-            Log.d(LOG_TAG, "test: " + movies.get(0).getTitle());
+            //Log.d(LOG_TAG, "test: " + movies.get(0).getTitle());
 
             for (int i = 0; i < movies.size(); i++) {
-                long rowId = movieDao.insertMovie(movies.get(i));
+                long movieRowId = movieDao.insertMovie(movies.get(i));
 
-                Log.d(LOG_TAG, "MOVIE_ID: " + rowId);
+                //Log.d(LOG_TAG, "MOVIE_ID: " + movieRowId);
+
+                List<Trailer> trailers = NetworkUtils.fetchTrailersData(NetworkUtils.buildTrailerUrl(movies.get(i).getAPIMovieID()));
+                for (int j = 0; j < trailers.size(); j++) {
+                    Trailer trailer = new Trailer((int)movieRowId, trailers.get(j).getName(), trailers.get(j).getThumbnail());
+                    trailerDao.insertTrailer(trailer);
+                }
+
+                List<Review> reviews = NetworkUtils.fetchReviewsData(NetworkUtils.buildReviewUrl(movies.get(i).getAPIMovieID()));
+                for (int j = 0; j < reviews.size(); j++) {
+                    Review review = new Review((int)movieRowId, reviews.get(j).getAuthor(), reviews.get(j).getContent());
+                    reviewDao.insertReview(review);
+                }
             }
             return null;
         }
+
     }
 
 

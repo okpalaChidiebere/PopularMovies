@@ -1,13 +1,11 @@
 package com.example.android.popularmovies.utils;
 
-import android.content.SharedPreferences;
 import android.net.Uri;
-import android.preference.PreferenceManager;
 import android.util.Log;
 
-import com.example.android.popularmovies.R;
-import com.example.android.popularmovies.database.AppDatabase;
 import com.example.android.popularmovies.model.Movies;
+import com.example.android.popularmovies.model.Review;
+import com.example.android.popularmovies.model.Trailer;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -48,6 +46,11 @@ public class NetworkUtils {
     private static final String API_KEY = "api_key";
     private static final String API_KEY_VALUE = "3bc5452a3c521649c0b418627ea7ddab";
     private static final String SORT_BY_KEY = "sort_by";
+    private static final String MOVIE_ID = "id";
+    private static final String TRAILER_NAME ="name";
+    private static final String TRAILER_ID = "key";
+    private static final String AUTHOR = "author";
+    private static final String CONTENT = "content";
 
     private NetworkUtils() {
     }
@@ -70,11 +73,10 @@ public class NetworkUtils {
                 int rating = currentArrayPosition.getInt(KEY_VOTE_AVERAGE);
                 String releaseDate = currentArrayPosition.getString(KEY_RELEASE_DATE);
                 String thumbnail = buildImageUrl(currentArrayPosition.getString(KEY_POSTER_PATH));
+                long movieID = currentArrayPosition.optLong(MOVIE_ID);
 
-                Movies newMoviesObjectInstance = new Movies(movieTitle, thumbnail, overview, rating, releaseDate);
+                Movies newMoviesObjectInstance = new Movies(movieTitle, thumbnail, overview, rating, releaseDate, movieID);
                 movies.add(newMoviesObjectInstance);
-
-                //long rowId = AppDatabase.getInstance().messageDao().insert(newMoviesObjectInstance);
 
                // System.out.println("title: " + movieTitle + " overview: " + overview + " vote: " + rating + " releaseDate: " + releaseDate + " image: " + thumbnail);
 
@@ -85,6 +87,67 @@ public class NetworkUtils {
         }
 
         return movies;
+    }
+
+    public static List<Trailer> parseTrailersJson(String trailerJSONResponse) {
+
+        ArrayList<Trailer> trailers = new ArrayList<>();
+
+        try {
+
+            JSONObject jsonObjRoot = new JSONObject(trailerJSONResponse);
+
+            JSONArray results = jsonObjRoot.getJSONArray(KEY_RESULTS);
+
+            for (int i = 0; i < results.length(); i++) {
+
+                // Add a new trailer for every index in the results array
+                trailers.add(new Trailer());
+
+                // Get the trailer at the current index and turn it into an json object
+                JSONObject currentMovieObject = results.optJSONObject(i);
+
+                /* Use the json object to fill the trailer with the appropriate data*/
+                trailers.get(i).setName(currentMovieObject.optString(TRAILER_NAME));
+                trailers.get(i).setThumbnail(buildYouTubeUrl(currentMovieObject.optString(TRAILER_ID)));
+
+            }
+
+        }catch (JSONException e) {
+            Log.e("JsonUtils", "Problem parsing the trailer JSON results", e);
+        }
+
+        return trailers;
+    }
+
+    public static List<Review> parseReviewJson(String reviewJSONResponse) {
+
+        ArrayList<Review> reviews = new ArrayList<>();
+
+        try {
+
+            JSONObject jsonObjRoot = new JSONObject(reviewJSONResponse);
+
+            JSONArray results = jsonObjRoot.getJSONArray(KEY_RESULTS);
+
+            for (int i = 0; i < results.length(); i++) {
+
+                // Add a new review for every index in the results array
+                reviews.add(new Review());
+
+                // Get the review at the current index and turn it into an json object
+                JSONObject currentMovieObject = results.optJSONObject(i);
+
+                /* Use the json object to fill the trailer with the appropriate data*/
+                reviews.get(i).setAuthor(currentMovieObject.optString(AUTHOR));
+                reviews.get(i).setContent(currentMovieObject.optString(CONTENT));
+            }
+
+        }catch (JSONException e) {
+            Log.e("JsonUtils", "Problem parsing the review JSON results", e);
+        }
+
+        return reviews;
     }
 
     private static String buildImageUrl(String posterPath) {
@@ -99,6 +162,16 @@ public class NetworkUtils {
 
 
         return FINAL_IMAGE_URL;
+    }
+
+    private static String buildYouTubeUrl(String youTubeKey) {
+
+        final String YOUTUBE_BASE_URL = "https://www.youtube.com/watch?v=";
+
+        String FINAL_YOUTUBE_URL = YOUTUBE_BASE_URL + youTubeKey;
+
+
+        return FINAL_YOUTUBE_URL;
     }
 
     public static String buildMovieUrl(String sortBy) {
@@ -226,6 +299,54 @@ public class NetworkUtils {
 
         // Return the list of {@link Movie}s
         return news;
+    }
+
+    /**
+     * Query the MOVIEdb dataset and return a list of {@link Trailer} objects.
+     */
+    public static List<Trailer> fetchTrailersData(String requestUrl) {
+        // Create URL object
+        URL url = createUrl(requestUrl);
+
+        // Perform HTTP request to the URL and receive a JSON response back
+        String jsonResponse = null;
+        try {
+            jsonResponse = makeHttpRequest(url);
+        } catch (IOException e) {
+            Log.e(LOG_TAG, "Problem making the HTTP request.", e);
+        }
+
+        Log.i(LOG_TAG, "TEST: fetching and extracting Review Json data");
+
+        // Extract relevant fields from the JSON response and create a list of {@link Movie}s
+        List<Trailer> trailers = parseTrailersJson(jsonResponse);
+
+        // Return the list of {@link Movie}s
+        return trailers;
+    }
+
+    /**
+     * Query the MOVIEdb dataset and return a list of {@link Trailer} objects.
+     */
+    public static List<Review> fetchReviewsData(String requestUrl) {
+        // Create URL object
+        URL url = createUrl(requestUrl);
+
+        // Perform HTTP request to the URL and receive a JSON response back
+        String jsonResponse = null;
+        try {
+            jsonResponse = makeHttpRequest(url);
+        } catch (IOException e) {
+            Log.e(LOG_TAG, "Problem making the HTTP request.", e);
+        }
+
+        Log.i(LOG_TAG, "TEST: fetching and extracting Review Json data");
+
+        // Extract relevant fields from the JSON response and create a list of {@link Movie}s
+        List<Review> reviews = parseReviewJson(jsonResponse);
+
+        // Return the list of {@link Movie}s
+        return reviews;
     }
 
 }

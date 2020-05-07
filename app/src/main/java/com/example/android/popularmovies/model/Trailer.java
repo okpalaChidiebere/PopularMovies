@@ -18,6 +18,7 @@ public class Trailer {
     private int trailer_id;
     private int movie_id;
     private String thumbnail;
+    private String name;
 
 
     /**
@@ -26,15 +27,22 @@ public class Trailer {
     public Trailer() {
     }
 
-    public Trailer (int tTrailerID, int tMovieID, String tThumbnail){
+    public Trailer (int tTrailerID, int tMovieID, String tName, String tThumbnail){
         this.trailer_id = tTrailerID;
         this.movie_id = tMovieID;
+        this.thumbnail = tThumbnail;
+        this.name = tName;
+    }
+
+    public Trailer (int tMovieID, String tName, String tThumbnail){
+        this.movie_id = tMovieID;
+        this.name = tName;
         this.thumbnail = tThumbnail;
     }
 
     @Ignore
-    public Trailer (int tMovieID, String tThumbnail){
-        this.movie_id = tMovieID;
+    public Trailer (String tName, String tThumbnail){
+        this.name = tName;
         this.thumbnail = tThumbnail;
     }
 
@@ -61,6 +69,14 @@ public class Trailer {
 
     public void setThumbnail(String video){
         this.thumbnail = video;
+    }
+
+    public void setName(String tName){
+        this.name = tName;
+    }
+
+    public String getName(){
+        return name;
     }
 
 

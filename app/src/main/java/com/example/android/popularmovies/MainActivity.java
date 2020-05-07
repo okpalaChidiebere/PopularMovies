@@ -31,17 +31,16 @@ import com.example.android.popularmovies.utils.NetworkUtils;
 import java.util.ArrayList;
 import java.util.List;
 
+/*
+* public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieAdapterOnClickHandler,
+        LoaderManager.LoaderCallbacks<List<Movies>>, SharedPreferences.OnSharedPreferenceChangeListener {*/
+
 public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieAdapterOnClickHandler,
-        LoaderManager.LoaderCallbacks<List<Movies>> {
+         SharedPreferences.OnSharedPreferenceChangeListener {
 
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
-
-
     private  MovieAdapter mMoviesAdapter;
-
-    private static final String BASE_MOVIEdb_REQUEST_URL =
-            "https://api.themoviedb.org/3/discover/movie";
 
     private ProgressBar mLoadingIndicator;
     private RecyclerView mRecyclerView;
@@ -55,22 +54,21 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
     private static final int FORECAST_LOADER_ID = 0;
 
-    private AppDatabase mDb;
+    private MovieViewModel mMovieViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mDb = AppDatabase.getInstance(getApplicationContext());
 
         mLoadingIndicator = (ProgressBar) findViewById(R.id.pb_loading_indicator);
 
         int loaderId = FORECAST_LOADER_ID;
-        LoaderManager.LoaderCallbacks<List<Movies>> callback = MainActivity.this;
+        /*LoaderManager.LoaderCallbacks<List<Movies>> callback = MainActivity.this;
         Bundle bundleForLoader = null;
         LoaderManager loaderManager = LoaderManager.getInstance(this);
-        loaderManager.initLoader(loaderId, bundleForLoader, callback);
+        loaderManager.initLoader(loaderId, bundleForLoader, callback);*/
 
         List<Movies> movies = new ArrayList<>();
 
@@ -83,7 +81,29 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
         mRecyclerView.setAdapter(mMoviesAdapter);
 
-        //retrieveTasks();
+        mMovieViewModel = new ViewModelProvider(this).get(MovieViewModel.class);
+        retrieveMovies();
+
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        sharedPreferences.registerOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (key.equals(getString(R.string.settings_sort_key))) {
+            String sortBy  = sharedPreferences.getString(
+                    key, getString(R.string.settings_sort_default_value)
+            );
+            mMovieViewModel.triggerPrefsChanged(this, sortBy);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        PreferenceManager.getDefaultSharedPreferences(this)
+                .unregisterOnSharedPreferenceChangeListener(this);
     }
 
     @Override
@@ -121,12 +141,12 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         startActivity(intentToStartDetailActivity);
     }
 
-    @NonNull
+    /*@NonNull
     @Override
     public Loader<List<Movies>> onCreateLoader(int id, @Nullable Bundle args) {
         return new AsyncTaskLoader<List<Movies>>(this) {
 
-            /* This String array will hold and help cache our weather data */
+            // This String array will hold and help cache our weather data
             LiveData<List<Movies>> mMovies = null;
 
             @Override
@@ -158,17 +178,17 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                 return movies;
             }
 
-            /*The LoaderManager initialized are designed to reload if the user navigates away from the
-            activity and them returns. We can avoid the extra load if we don't find it desirable by
-            caching and redelivering our existing result.*/
-            /*public void deliverResult(List<Movies>  data) {
+            //The LoaderManager initialized are designed to reload if the user navigates away from the
+            //activity and them returns. We can avoid the extra load if we don't find it desirable by
+            //caching and redelivering our existing result.
+            public void deliverResult(List<Movies>  data) {
                 mMovies = data;
                 super.deliverResult(data);
-            }*/
+            }
         };
-    }
+    }*/
 
-    @Override
+    /*@Override
     public void onLoadFinished(@NonNull Loader<List<Movies>> loader, List<Movies> data) {
         mLoadingIndicator.setVisibility(View.INVISIBLE);
         if (data != null && !data.isEmpty()) {
@@ -197,7 +217,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
         return sortBy;
 
-    }
+    }*/
 
     private void openSettingsActivity(){
         Context context = this;
@@ -207,17 +227,12 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     }
 
     private void retrieveMovies() {
-        Log.d(LOG_TAG, "Actively retrieving the movies from the DataBase");
 
-        //LiveData<List<Movies>> movies = mDb.movieDao().getAllMovies();
-
-        MovieViewModel viewModel = new ViewModelProvider(this).get(MovieViewModel.class);
-
-        viewModel.getMovies().observe(this, new Observer<List<Movies>>() {
-        //movies.observe(this, new Observer<List<Movies>>() {
+        mMovieViewModel.getUsers(this).observe(this, new Observer<List<Movies>>() {
             @Override
             public void onChanged(@Nullable List<Movies> moviesList) {
-                Log.d(LOG_TAG, "Receiving database update from LiveData in ViewModel");
+                Log.d(LOG_TAG, "Updating List of movies from LiveData in ViewModel");
+                //mMoviesAdapter.setData(movies);
                 mMoviesAdapter.setData(moviesList);
             }
         });

@@ -39,6 +39,12 @@ public class Review {
         this.content = tContent;
     }
 
+    @Ignore
+    public Review (String tAuthor, String tContent){
+        this.author = tAuthor;
+        this.content = tContent;
+    }
+
     // getters and setters are ignored for brevity but they are required for Room to work.
     public int getReview_id(){
         return review_id;

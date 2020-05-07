@@ -10,11 +10,7 @@ import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 
-import com.example.android.popularmovies.database.AppDatabase;
-
 public class SettingsActivity extends AppCompatActivity {
-
-    private AppDatabase mDb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,7 +23,6 @@ public class SettingsActivity extends AppCompatActivity {
 //    public static class MoviesPreferenceFragment extends PreferenceFragment {
     public static class MoviesPreferenceFragment extends PreferenceFragment
             implements Preference.OnPreferenceChangeListener{
-
         @Override
         public void onCreate(@Nullable Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
