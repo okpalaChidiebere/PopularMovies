@@ -7,7 +7,9 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -22,7 +24,7 @@ import com.squareup.picasso.Picasso;
 import java.util.List;
 
 
-public class MovieDetails extends AppCompatActivity {
+public class MovieDetails extends AppCompatActivity implements TrailerAdapter.TrailerAdapterOnClickHandler {
 
     private static final String LOG_TAG = MovieDetails.class.getSimpleName();
 
@@ -70,7 +72,7 @@ public class MovieDetails extends AppCompatActivity {
                 = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         mTv_recyclerView_trailer.setLayoutManager(layoutManager);
         mTv_recyclerView_trailer.setHasFixedSize(true);
-        mTrailerAdapter = new TrailerAdapter(this);
+        mTrailerAdapter = new TrailerAdapter(this, this);
 
         mTv_recyclerView_trailer.setAdapter(mTrailerAdapter);
 
@@ -128,6 +130,21 @@ public class MovieDetails extends AppCompatActivity {
 
         }
 
+    }
+
+    @Override
+    public void onClick(Trailer trailer) {
+        String youtubeLink = trailer.getThumbnail();
+        String youtubeVideoKey = youtubeLink.substring(youtubeLink.lastIndexOf("=") + 1);
+
+        Intent appIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:" + youtubeVideoKey));
+        Intent webIntent = new Intent(Intent.ACTION_VIEW,
+                Uri.parse(youtubeLink));
+        try {
+            startActivity(appIntent);
+        } catch (ActivityNotFoundException ex) {
+            startActivity(webIntent);
+        }
     }
 
     public void loadMovieReviews(){
