@@ -4,6 +4,7 @@ import com.example.android.popularmovies.model.Trailer;
 
 import java.util.List;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
@@ -12,7 +13,7 @@ import androidx.room.Query;
 public interface TrailerDao {
 
     @Query("SELECT * FROM trailer WHERE movie_id = :id")
-    List<Trailer> getAllTrailersByMovieID(int id);
+    LiveData<List<Trailer>>getAllTrailersByMovieID(int id);
 
     @Insert
     void insertTrailer(Trailer trailer);

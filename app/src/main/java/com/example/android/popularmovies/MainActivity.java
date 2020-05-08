@@ -26,6 +26,7 @@ import android.widget.ProgressBar;
 import com.example.android.popularmovies.database.AppDatabase;
 import com.example.android.popularmovies.database.MovieViewModel;
 import com.example.android.popularmovies.model.Movies;
+import com.example.android.popularmovies.repositiory.MovieRepository;
 import com.example.android.popularmovies.utils.NetworkUtils;
 
 import java.util.ArrayList;
@@ -51,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     private static final String EXTRA_OVERVIEW = "MOVIE_OVERVIEW";
     private static final String EXTRA_VOTE_AVERAGE = "MOVIE_RATINGS";
     private static final String EXTRA_RELEASE_DATE = "MOVIE_RELEASE_DATE";
+    private static final String EXTRA_MOVIE_ID = "MOVIE_ID";
 
     private static final int FORECAST_LOADER_ID = 0;
 
@@ -129,7 +131,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     public void onClick(Movies movie) {
 
         Context context = this;
-
         Class destinationClass = MovieDetails.class;
         Intent intentToStartDetailActivity = new Intent(context, destinationClass);
         intentToStartDetailActivity.putExtra(EXTRA_TITLE, movie.getTitle());
@@ -137,6 +138,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         intentToStartDetailActivity.putExtra(EXTRA_OVERVIEW, movie.getOverView());
         intentToStartDetailActivity.putExtra(EXTRA_VOTE_AVERAGE, movie.getUserRatings());
         intentToStartDetailActivity.putExtra(EXTRA_RELEASE_DATE, movie.getReleaseDate());
+        //intentToStartDetailActivity.putExtra(EXTRA_MOVIE_ID, (int) movieID);
+        intentToStartDetailActivity.putExtra(EXTRA_MOVIE_ID, movie.getMovieID());
 
         startActivity(intentToStartDetailActivity);
     }

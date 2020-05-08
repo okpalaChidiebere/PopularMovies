@@ -121,6 +121,26 @@
 
                 <View
                     android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@android:color/black" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/textPadding"
+                    android:textColor="@color/colorPrimaryText"
+                    android:text="Trailers"
+                    android:textSize="25dp"
+                    android:textStyle="bold"/>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/tv_recyclerview_trailers"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+                <View
+                    android:layout_width="match_parent"
                     android:layout_height="40dp" />
 
             </LinearLayout>

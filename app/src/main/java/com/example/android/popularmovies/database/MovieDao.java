@@ -25,4 +25,7 @@ public interface MovieDao {
     @Query("DELETE FROM movies")
     void deleteAll();
 
+    @Query("SELECT movie_id FROM movies WHERE api_movie_id = :apiMovieID LIMIT 1")
+    long getLocalDBMovieId (long apiMovieID);
+
 }

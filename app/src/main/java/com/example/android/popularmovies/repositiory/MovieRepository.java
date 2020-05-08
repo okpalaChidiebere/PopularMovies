@@ -24,6 +24,8 @@ public class MovieRepository {
     private ReviewDao mReviewDao;
     private TrailerDao mTrailerDao;
     private LiveData<List<Movie>> mMovies;
+    private LiveData<List<Trailer>> mTrailers;
+    private static long mMovieid;
     private static final String LOG_TAG = MovieRepository.class.getSimpleName();
 
 
@@ -87,5 +89,30 @@ public class MovieRepository {
             return null;
         }
     }
+
+    public long getMovieID(long apiMovieID){
+
+        new getMovieIDAsyncTask(mMovieDao, apiMovieID).execute();
+        return mMovieid;
+    }
+
+    private static class getMovieIDAsyncTask extends AsyncTask<Void, Void, Void> {
+
+        private MovieDao mMovieDao;
+        private long mApiId;
+
+        getMovieIDAsyncTask(MovieDao dao, long apiID){
+            mMovieDao = dao;
+            mApiId = apiID;
+        }
+
+        @Override
+        protected Void doInBackground(final Void... voids) {
+            mMovieid = mMovieDao.getLocalDBMovieId(mApiId);
+            return null;
+        }
+
+    }
+
 
 }
