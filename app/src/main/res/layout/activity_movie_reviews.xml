@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MovieReviews">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/tv_recyclerView_moviesReviews"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <!-- TODO: will have to add a default text for when there is no review on movie-->
+    <!--<ProgressBar
+        android:id="@+id/pb_loading_indicator"
+        android:layout_height="42dp"
+        android:layout_width="42dp"
+        android:layout_gravity="center"
+        android:visibility="invisible" />-->
+
+</FrameLayout>

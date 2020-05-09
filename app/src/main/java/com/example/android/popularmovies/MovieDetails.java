@@ -12,6 +12,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -42,6 +44,8 @@ public class MovieDetails extends AppCompatActivity implements TrailerAdapter.Tr
 
     private GetTrailersViewModelFactory factory;
     private GetTrailerViewModel mTrailerViewModel;
+
+    private int intentMovieReviewId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,6 +128,7 @@ public class MovieDetails extends AppCompatActivity implements TrailerAdapter.Tr
 
             if (intentThatStartedThisActivity.hasExtra(EXTRA_MOVIE_ID)) {
                 movieID = intentThatStartedThisActivity.getLongExtra(EXTRA_MOVIE_ID,0);
+                intentMovieReviewId = (int)movieID; //to passed as an explicit intent to get movie reviews
                 factory = new GetTrailersViewModelFactory(this, (int)movieID);
                 loadMovieReviews();
             }
@@ -145,6 +150,28 @@ public class MovieDetails extends AppCompatActivity implements TrailerAdapter.Tr
         } catch (ActivityNotFoundException ex) {
             startActivity(webIntent);
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.movie_detail, menu);
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        int id = item.getItemId();
+        if (id == R.id.action_reviews) {
+
+            Intent startMovieReviewsActivity = new Intent(this, MovieReviews.class);
+            startMovieReviewsActivity.putExtra(EXTRA_MOVIE_ID, intentMovieReviewId);
+            startActivity(startMovieReviewsActivity);
+            return true;
+
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     public void loadMovieReviews(){
