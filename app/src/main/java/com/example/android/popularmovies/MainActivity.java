@@ -27,6 +27,7 @@ import com.example.android.popularmovies.database.AppDatabase;
 import com.example.android.popularmovies.database.MovieViewModel;
 import com.example.android.popularmovies.model.Movies;
 import com.example.android.popularmovies.repositiory.MovieRepository;
+import com.example.android.popularmovies.sync.MovieSyncUtils;
 import com.example.android.popularmovies.utils.NetworkUtils;
 
 import java.util.ArrayList;
@@ -36,8 +37,7 @@ import java.util.List;
 * public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieAdapterOnClickHandler,
         LoaderManager.LoaderCallbacks<List<Movies>>, SharedPreferences.OnSharedPreferenceChangeListener {*/
 
-public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieAdapterOnClickHandler,
-         SharedPreferences.OnSharedPreferenceChangeListener {
+public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieAdapterOnClickHandler{
 
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
@@ -86,27 +86,9 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         mMovieViewModel = new ViewModelProvider(this).get(MovieViewModel.class);
         retrieveMovies();
 
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        sharedPreferences.registerOnSharedPreferenceChangeListener(this);
+        MovieSyncUtils.initialize(this);
     }
 
-    @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (key.equals(getString(R.string.settings_sort_key))) {
-            String sortBy  = sharedPreferences.getString(
-                    key, getString(R.string.settings_sort_default_value)
-            );
-            mMovieViewModel.triggerPrefsChanged(this, sortBy);
-        }
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-        PreferenceManager.getDefaultSharedPreferences(this)
-                .unregisterOnSharedPreferenceChangeListener(this);
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

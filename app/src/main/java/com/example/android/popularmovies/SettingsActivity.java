@@ -3,12 +3,15 @@ package com.example.android.popularmovies;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
+
+import com.example.android.popularmovies.sync.MovieSyncUtils;
 
 public class SettingsActivity extends AppCompatActivity {
 
@@ -22,7 +25,7 @@ public class SettingsActivity extends AppCompatActivity {
 
 //    public static class MoviesPreferenceFragment extends PreferenceFragment {
     public static class MoviesPreferenceFragment extends PreferenceFragment
-            implements Preference.OnPreferenceChangeListener{
+            implements Preference.OnPreferenceChangeListener, SharedPreferences.OnSharedPreferenceChangeListener{
         @Override
         public void onCreate(@Nullable Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
@@ -48,6 +51,36 @@ public class SettingsActivity extends AppCompatActivity {
             preference.setSummary(labels[prefIndex]);
         }
         return true;
+    }
+
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        // unregister the preference change listener
+        getPreferenceScreen().getSharedPreferences()
+                .unregisterOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        // register the preference change listener
+        getPreferenceScreen().getSharedPreferences()
+                .registerOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+
+        Activity activity = getActivity();
+
+        if (key.equals(getString(R.string.settings_sort_key))) {
+
+            //TODO check id the device is connected to internet before you sync.
+            //Notify the user when there is no internet connection to sync
+            MovieSyncUtils.startImmediateSync(activity);
+        }
     }
 
         //Helper Method used in order to update the preference summary when the settings activity

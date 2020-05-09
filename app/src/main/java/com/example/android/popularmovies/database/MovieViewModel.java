@@ -36,6 +36,8 @@ public class MovieViewModel extends ViewModel {
         return lMovies;
     }
 
+    //initially used to trigger onsharedPreferenceChanged in MainActivity. i was causing some runtime error
+    //i had to move it to the setting fragment itself which is the correct way to do it
     public void triggerPrefsChanged(Context context, String sortKeyValue){
         new MovieRepository(context).rePopulateTables(sortKeyValue);
 
