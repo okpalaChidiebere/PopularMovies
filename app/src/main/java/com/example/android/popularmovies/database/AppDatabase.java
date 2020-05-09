@@ -38,8 +38,8 @@ public abstract class AppDatabase extends RoomDatabase {
                 Log.d(LOG_TAG, "Creating new database instance");
                 sInstance = Room.databaseBuilder(context.getApplicationContext(),
                         AppDatabase.class, AppDatabase.DATABASE_NAME)
-                        .allowMainThreadQueries() // SHOULD NOT BE USED IN PRODUCTION !!!
-                        //.fallbackToDestructiveMigration()
+                        //.allowMainThreadQueries() // SHOULD NOT BE USED IN PRODUCTION !!!
+                        .fallbackToDestructiveMigration()
                         .addCallback(new RoomDatabase.Callback() {
                             @Override
                             public void onCreate(@NonNull SupportSQLiteDatabase db) {
