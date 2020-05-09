@@ -18,8 +18,8 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.android.popularmovies.database.GetMovieIdViewModelFactory;
 import com.example.android.popularmovies.database.GetTrailerViewModel;
-import com.example.android.popularmovies.database.GetTrailersViewModelFactory;
 import com.example.android.popularmovies.model.Trailer;
 import com.squareup.picasso.Picasso;
 
@@ -42,7 +42,7 @@ public class MovieDetails extends AppCompatActivity implements TrailerAdapter.Tr
     private RecyclerView mTv_recyclerView_trailer;
     private  TrailerAdapter mTrailerAdapter;
 
-    private GetTrailersViewModelFactory factory;
+    private GetMovieIdViewModelFactory factory;
     private GetTrailerViewModel mTrailerViewModel;
 
     private int intentMovieReviewId;
@@ -129,8 +129,8 @@ public class MovieDetails extends AppCompatActivity implements TrailerAdapter.Tr
             if (intentThatStartedThisActivity.hasExtra(EXTRA_MOVIE_ID)) {
                 movieID = intentThatStartedThisActivity.getLongExtra(EXTRA_MOVIE_ID,0);
                 intentMovieReviewId = (int)movieID; //to passed as an explicit intent to get movie reviews
-                factory = new GetTrailersViewModelFactory(this, (int)movieID);
-                loadMovieReviews();
+                factory = new GetMovieIdViewModelFactory(this, (int)movieID, false);
+                loadMovieTrailers();
             }
 
         }
@@ -174,7 +174,7 @@ public class MovieDetails extends AppCompatActivity implements TrailerAdapter.Tr
         return super.onOptionsItemSelected(item);
     }
 
-    public void loadMovieReviews(){
+    public void loadMovieTrailers(){
         mTrailerViewModel =
                 new ViewModelProvider(this, factory).get(GetTrailerViewModel.class);
 

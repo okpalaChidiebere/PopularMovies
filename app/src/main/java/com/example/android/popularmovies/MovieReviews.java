@@ -1,6 +1,9 @@
 package com.example.android.popularmovies;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -9,7 +12,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 
-import com.example.android.popularmovies.database.AppDatabase;
+import com.example.android.popularmovies.database.GetMovieIdViewModelFactory;
+import com.example.android.popularmovies.database.GetReviewViewModel;
 import com.example.android.popularmovies.model.Review;
 
 import java.util.List;
@@ -21,6 +25,9 @@ public class MovieReviews extends AppCompatActivity {
 
     private RecyclerView mTv_recyclerView_review;
     private ReviewAdapter mReviewAdapter;
+
+    private GetMovieIdViewModelFactory factory;
+    private GetReviewViewModel mReviewViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,12 +55,9 @@ public class MovieReviews extends AppCompatActivity {
 
             if (intentThatStartedThisActivity.hasExtra(EXTRA_MOVIE_ID)) {
                 mMovieID = intentThatStartedThisActivity.getIntExtra(EXTRA_MOVIE_ID,0);
-                Log.d(LOG_TAG, "MovieID for reviews: "+ mMovieID);
 
-                //TODO (1) Testing on UI thread the setAdapter. Must change it to view Model*/
-                List<Review> mReviews= AppDatabase.getInstance(this).reviewDao().getAllReviewByMovieID((int)mMovieID);
-                Log.d(LOG_TAG, "Number of Reviews" + mReviews.size());
-                mReviewAdapter.setData(mReviews);
+                factory = new GetMovieIdViewModelFactory(this, mMovieID, true);
+                loadMovieReviews();
 
             }
         }
@@ -67,5 +71,18 @@ public class MovieReviews extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void loadMovieReviews(){
+        mReviewViewModel =
+                new ViewModelProvider(this, factory).get(GetReviewViewModel.class);
+
+        mReviewViewModel.getReviews().observe(this, new Observer<List<Review>>() {
+            @Override
+            public void onChanged(@Nullable List<Review> reviewList) {
+                Log.d(LOG_TAG, "Updating List of Reviews from LiveData in ViewModel");
+                mReviewAdapter.setData(reviewList);
+            }
+        });
     }
 }
