@@ -23,7 +23,6 @@ public class MovieRepository {
     private MovieDao mMovieDao;
     private ReviewDao mReviewDao;
     private TrailerDao mTrailerDao;
-    private LiveData<List<Movie>> mMovies;
     private LiveData<List<Trailer>> mTrailers;
     private static long mMovieid;
     private static final String LOG_TAG = MovieRepository.class.getSimpleName();
@@ -67,7 +66,6 @@ public class MovieRepository {
 
             String url = NetworkUtils.buildMovieUrl(sortMovieValue);
             List<Movies> movies = NetworkUtils.fetchEarthquakeData(url);
-
 
             for (int i = 0; i < movies.size(); i++) {
                 long movieRowId = mMovieDao.insertMovie(movies.get(i));
