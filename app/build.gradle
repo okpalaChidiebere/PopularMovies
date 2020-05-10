@@ -40,4 +40,8 @@ dependencies {
     // LiveData
     implementation "androidx.lifecycle:lifecycle-livedata:$lifecycle_version"
     annotationProcessor "androidx.lifecycle:lifecycle-compiler:$lifecycle_version"
+
+    /*Work Manager*/
+    def work_version = "2.3.4"
+    implementation "androidx.work:work-runtime:$work_version"
 }

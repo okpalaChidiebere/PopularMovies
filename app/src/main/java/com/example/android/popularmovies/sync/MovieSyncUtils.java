@@ -9,6 +9,7 @@ public class MovieSyncUtils {
 
     private static boolean sInitialized;
 
+    //Did not use this, because my workManager handles this sync on app boot or install
     synchronized public static void initialize(@NonNull final Context context) {
 
         /*
@@ -22,6 +23,7 @@ public class MovieSyncUtils {
         context.startService(intentToSyncImmediately);
     }
 
+    //used in onSharedPreferenceChangeListener
     public static void startImmediateSync(@NonNull final Context context) {
         //Within that method, start the MovieSyncIntentService
         Intent intentToSyncImmediately = new Intent(context, MovieSyncIntentService.class);

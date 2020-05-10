@@ -11,6 +11,9 @@ import androidx.loader.content.AsyncTaskLoader;
 import androidx.loader.content.Loader;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkInfo;
+import androidx.work.WorkManager;
 
 import android.content.Context;
 import android.content.Intent;
@@ -28,7 +31,9 @@ import com.example.android.popularmovies.database.MovieViewModel;
 import com.example.android.popularmovies.model.Movies;
 import com.example.android.popularmovies.repositiory.MovieRepository;
 import com.example.android.popularmovies.sync.MovieSyncUtils;
+import com.example.android.popularmovies.sync.MovieSyncViewModel;
 import com.example.android.popularmovies.utils.NetworkUtils;
+import com.example.android.popularmovies.utils.NotificationUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,6 +63,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
     private MovieViewModel mMovieViewModel;
 
+    private MovieSyncViewModel mMovieSyncViewModel;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,9 +91,40 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         mRecyclerView.setAdapter(mMoviesAdapter);
 
         mMovieViewModel = new ViewModelProvider(this).get(MovieViewModel.class);
-        retrieveMovies();
+        //retrieveMovies();
 
-        MovieSyncUtils.initialize(this);
+        //MovieSyncUtils.initialize(this);
+
+        mMovieSyncViewModel = new ViewModelProvider(this).get(MovieSyncViewModel.class);
+
+        mMovieSyncViewModel.GetData(this);
+
+        mMovieSyncViewModel.getOutputWorkInfo().observe(this, new Observer<List<WorkInfo>>() {
+            @Override
+            public void onChanged(List<WorkInfo> workInfos) {
+
+                // If there are no matching work info, do nothing
+                if (workInfos == null || workInfos.isEmpty()) {
+                    return;
+                }
+
+                // We only care about the first output status.
+                // Every continuation has only one worker tagged TAG_SYNC_DATA
+                WorkInfo workInfo = workInfos.get(0);
+                Log.i(LOG_TAG, "WorkState: " + workInfo.getState());
+                if (workInfo.getState() == WorkInfo.State.ENQUEUED) {
+                    showWorkFinished();
+                    retrieveMovies();
+                }else {
+                    showWorkInProgress();
+                }
+            }
+        });
+
+
+
+
+
     }
 
 
@@ -105,7 +143,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
             openSettingsActivity();
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -222,5 +259,29 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
             }
         });
     }
+
+    private void showWorkInProgress() {
+        mLoadingIndicator.setVisibility(View.VISIBLE);
+    }
+
+    private void showWorkFinished() {
+        mLoadingIndicator.setVisibility(View.GONE);
+    }
+
+    /*private void observeWorkManager(OneTimeWorkRequest workRequest){
+        WorkManager.getInstance(this).getWorkInfoByIdLiveData(workRequest.getId())
+                .observe(this, new Observer<WorkInfo>() {
+                    @Override
+                    public void onChanged(@Nullable WorkInfo workInfo) {
+
+                        //Displaying the status into TextView
+                        //textView.append(workInfo.getState().name() + "\n");
+                        String status = workInfo.getState().name();
+                        if(status == "SUCCEEDED"){
+                            NotificationUtils.notifyUserOfNewWeather(getApplicationContext());
+                        }
+                    }
+                });
+    }*/
 
 }

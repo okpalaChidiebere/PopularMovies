@@ -64,4 +64,6 @@
     </string>
     <string name="text_author">Louisa Moore - Screen Zealots</string>
     <string name="review_readMore">Read More</string>
+
+    <string name="main_notification_channel_name">Primary</string>
 </resources>
