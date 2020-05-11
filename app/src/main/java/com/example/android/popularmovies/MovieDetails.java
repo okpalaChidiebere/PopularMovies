@@ -15,12 +15,14 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.android.popularmovies.database.GetMovieIdViewModelFactory;
 import com.example.android.popularmovies.database.GetTrailerViewModel;
 import com.example.android.popularmovies.model.Trailer;
+import com.google.android.material.snackbar.Snackbar;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -46,6 +48,8 @@ public class MovieDetails extends AppCompatActivity implements TrailerAdapter.Tr
     private GetTrailerViewModel mTrailerViewModel;
 
     private int intentMovieReviewId;
+    private Button markFavourite;
+    private int movieID; //used to the the whole 'favorite scope weh button is clicked'
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +67,7 @@ public class MovieDetails extends AppCompatActivity implements TrailerAdapter.Tr
         int mRatings;
         long movieID;
 
+        markFavourite = (Button) findViewById(R.id.tv_markFavorite);
         thumbnailBackgroundView = (ImageView) findViewById(R.id.tv_detail_thumbnail_background);
         titleView = (TextView) findViewById(R.id.tv_detail_title);
         thumbnailView = (ImageView) findViewById(R.id.tv_detail_thumbnail);
@@ -135,6 +140,30 @@ public class MovieDetails extends AppCompatActivity implements TrailerAdapter.Tr
 
         }
 
+    }
+
+    public void markMovieAsFavorite(View view) {
+        String confirmation = "";
+        String buttonText = "";
+        movieID = intentMovieReviewId;
+        switch(view.getId()){
+            case R.id.tv_markFavorite:
+                if(markFavourite.getText() == getString(R.string.notMarked_favorite)) {
+                    //mFavoriteIcon.setImageResource(R.drawable.favorite_icon_on);
+                    confirmation = getString(R.string.Added_confirmation);
+                    buttonText = getString(R.string.marked_favorite);
+                }else{
+                    confirmation = getString(R.string.Removed_confirmation);
+                    buttonText = getString(R.string.notMarked_favorite);
+                }
+                Snackbar.make(view, confirmation, Snackbar.LENGTH_LONG)
+                        .setAction(getString(R.string.Action), null).show();
+                markFavourite.setText(buttonText);
+
+                // TODO: Add movie into favorite room table
+                break;
+            default:
+        }
     }
 
     @Override

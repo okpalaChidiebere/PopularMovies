@@ -66,4 +66,15 @@
     <string name="review_readMore">Read More</string>
 
     <string name="main_notification_channel_name">Primary</string>
+
+    <!-- SnackBar strings-->
+    <string name="Added_confirmation">Added to Favourites</string>
+    <string name="Removed_confirmation">Removed from Favourites</string>
+    <string name="Action">Action</string>
+    <!-- End SnackBar-->
+
+    <!-- favorite Button -->
+    <string name="marked_favorite">MARKED FAVORITE</string>
+    <string name="notMarked_favorite">MARK AS FAVORITE</string>
+    <!-- End favorite Button-->
 </resources>

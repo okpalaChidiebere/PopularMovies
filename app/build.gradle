@@ -44,4 +44,8 @@ dependencies {
     /*Work Manager*/
     def work_version = "2.3.4"
     implementation "androidx.work:work-runtime:$work_version"
+
+    //for snackBar and other features
+    implementation 'com.android.support:design:28.1.0'
+
 }
