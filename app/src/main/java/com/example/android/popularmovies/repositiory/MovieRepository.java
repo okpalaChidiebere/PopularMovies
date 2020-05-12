@@ -1,7 +1,6 @@
 package com.example.android.popularmovies.repositiory;
 
 import android.content.Context;
-import android.graphics.Movie;
 import android.os.AsyncTask;
 import android.util.Log;
 

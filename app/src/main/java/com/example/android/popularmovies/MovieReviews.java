@@ -18,8 +18,6 @@ import com.example.android.popularmovies.database.GetMovieIdViewModelFactory;
 import com.example.android.popularmovies.database.GetReviewViewModel;
 import com.example.android.popularmovies.model.Review;
 
-import org.w3c.dom.Text;
-
 import java.util.List;
 
 public class MovieReviews extends AppCompatActivity {
@@ -45,8 +43,8 @@ public class MovieReviews extends AppCompatActivity {
         this.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         setTitle(getString(R.string.action_movieReview)); //page label
 
-        mTv_recyclerView_review = (RecyclerView) findViewById(R.id.tv_recyclerView_moviesReviews);
-        defaultMessage = (TextView) findViewById(R.id.default_review_message);
+        mTv_recyclerView_review = findViewById(R.id.tv_recyclerView_moviesReviews);
+        defaultMessage = findViewById(R.id.default_review_message);
         LinearLayoutManager layoutManager
                 = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         mTv_recyclerView_review.setLayoutManager(layoutManager);

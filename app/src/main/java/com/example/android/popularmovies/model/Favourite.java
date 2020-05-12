@@ -2,7 +2,6 @@ package com.example.android.popularmovies.model;
 
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
-import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 

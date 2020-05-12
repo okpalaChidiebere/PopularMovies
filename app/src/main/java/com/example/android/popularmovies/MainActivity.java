@@ -1,46 +1,29 @@
 package com.example.android.popularmovies;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.loader.app.LoaderManager;
-import androidx.loader.content.AsyncTaskLoader;
-import androidx.loader.content.Loader;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkInfo;
-import androidx.work.WorkManager;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 
-import com.example.android.popularmovies.database.AppDatabase;
 import com.example.android.popularmovies.database.MovieViewModel;
 import com.example.android.popularmovies.model.Movies;
-import com.example.android.popularmovies.repositiory.MovieRepository;
-import com.example.android.popularmovies.sync.MovieSyncUtils;
 import com.example.android.popularmovies.sync.MovieSyncViewModel;
-import com.example.android.popularmovies.utils.NetworkUtils;
-import com.example.android.popularmovies.utils.NotificationUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/*
-* public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieAdapterOnClickHandler,
-        LoaderManager.LoaderCallbacks<List<Movies>>, SharedPreferences.OnSharedPreferenceChangeListener {*/
 
 public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieAdapterOnClickHandler{
 
@@ -74,10 +57,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         mLoadingIndicator = (ProgressBar) findViewById(R.id.pb_loading_indicator);
 
         int loaderId = FORECAST_LOADER_ID;
-        /*LoaderManager.LoaderCallbacks<List<Movies>> callback = MainActivity.this;
-        Bundle bundleForLoader = null;
-        LoaderManager loaderManager = LoaderManager.getInstance(this);
-        loaderManager.initLoader(loaderId, bundleForLoader, callback);*/
 
         List<Movies> movies = new ArrayList<>();
 
@@ -91,9 +70,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         mRecyclerView.setAdapter(mMoviesAdapter);
 
         mMovieViewModel = new ViewModelProvider(this).get(MovieViewModel.class);
-        //retrieveMovies();
-
-        //MovieSyncUtils.initialize(this);
 
         mMovieSyncViewModel = new ViewModelProvider(this).get(MovieSyncViewModel.class);
 
@@ -120,9 +96,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                 }
             }
         });
-
-
-
 
 
     }
@@ -161,89 +134,10 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         intentToStartDetailActivity.putExtra(EXTRA_OVERVIEW, movie.getOverView());
         intentToStartDetailActivity.putExtra(EXTRA_VOTE_AVERAGE, movie.getUserRatings());
         intentToStartDetailActivity.putExtra(EXTRA_RELEASE_DATE, movie.getReleaseDate());
-        //intentToStartDetailActivity.putExtra(EXTRA_MOVIE_ID, (int) movieID);
         intentToStartDetailActivity.putExtra(EXTRA_MOVIE_ID, movie.getMovieID());
 
         startActivity(intentToStartDetailActivity);
     }
-
-    /*@NonNull
-    @Override
-    public Loader<List<Movies>> onCreateLoader(int id, @Nullable Bundle args) {
-        return new AsyncTaskLoader<List<Movies>>(this) {
-
-            // This String array will hold and help cache our weather data
-            LiveData<List<Movies>> mMovies = null;
-
-            @Override
-            protected void onStartLoading() {
-
-                mMovies=mDb.movieDao().getAllMovies();
-
-                if (mMovies != null) {
-                    //deliverResult(mMovies);
-
-                    retrieveMovies();
-                    Log.d(LOG_TAG, "exists");
-                } else {
-                    mLoadingIndicator.setVisibility(View.VISIBLE);
-                    forceLoad();
-                    Log.d(LOG_TAG, "forceLoad");
-                }
-
-            }
-
-            @Nullable
-            @Override
-            public List<Movies> loadInBackground() {
-
-                String url = NetworkUtils.buildMovieUrl(getSortPreference());
-                // Perform the network request, parse the response, and extract a list of earthquakes.
-                List<Movies> movies = NetworkUtils.fetchEarthquakeData(url);
-
-                return movies;
-            }
-
-            //The LoaderManager initialized are designed to reload if the user navigates away from the
-            //activity and them returns. We can avoid the extra load if we don't find it desirable by
-            //caching and redelivering our existing result.
-            public void deliverResult(List<Movies>  data) {
-                mMovies = data;
-                super.deliverResult(data);
-            }
-        };
-    }*/
-
-    /*@Override
-    public void onLoadFinished(@NonNull Loader<List<Movies>> loader, List<Movies> data) {
-        mLoadingIndicator.setVisibility(View.INVISIBLE);
-        if (data != null && !data.isEmpty()) {
-            mMoviesAdapter.setData(data);
-        }
-
-
-    }
-
-    @Override
-    public void onLoaderReset(@NonNull Loader<List<Movies>> loader) {
-        // Loader reset, so we can clear out our existing data.
-        mMoviesAdapter.clear();
-    }
-
-
-
-    public String getSortPreference(){
-        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-
-        //Update URI to Use the User’s Preferred Sort Order
-        String sortBy  = sharedPrefs.getString(
-                getString(R.string.settings_sort_key),
-                getString(R.string.settings_sort_default_value)
-        );
-
-        return sortBy;
-
-    }*/
 
     private void openSettingsActivity(){
         Context context = this;
@@ -279,20 +173,5 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         mLoadingIndicator.setVisibility(View.GONE);
     }
 
-    /*private void observeWorkManager(OneTimeWorkRequest workRequest){
-        WorkManager.getInstance(this).getWorkInfoByIdLiveData(workRequest.getId())
-                .observe(this, new Observer<WorkInfo>() {
-                    @Override
-                    public void onChanged(@Nullable WorkInfo workInfo) {
-
-                        //Displaying the status into TextView
-                        //textView.append(workInfo.getState().name() + "\n");
-                        String status = workInfo.getState().name();
-                        if(status == "SUCCEEDED"){
-                            NotificationUtils.notifyUserOfNewWeather(getApplicationContext());
-                        }
-                    }
-                });
-    }*/
 
 }
