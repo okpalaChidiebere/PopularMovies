@@ -9,4 +9,9 @@
         android:title="@string/settings_menu_item"
         app:showAsAction="never"/>
 
+    <item
+        android:id="@+id/action_favourites"
+        android:title="@string/favourite_menu_item"
+        app:showAsAction="ifRoom"/>
+
 </menu>

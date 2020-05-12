@@ -1,33 +1,35 @@
 package com.example.android.popularmovies;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.work.WorkInfo;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 
+import com.example.android.popularmovies.database.MovieViewModel;
 import com.example.android.popularmovies.model.Movies;
-import com.example.android.popularmovies.utils.NetworkUtils;
+import com.example.android.popularmovies.sync.MovieSyncViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieAdapterOnClickHandler {
+
+public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieAdapterOnClickHandler{
+
+    private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
     private  MovieAdapter mMoviesAdapter;
-
-    private static final String BASE_MOVIEdb_REQUEST_URL =
-            "https://api.themoviedb.org/3/discover/movie";
 
     private ProgressBar mLoadingIndicator;
     private RecyclerView mRecyclerView;
@@ -38,16 +40,23 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     private static final String EXTRA_OVERVIEW = "MOVIE_OVERVIEW";
     private static final String EXTRA_VOTE_AVERAGE = "MOVIE_RATINGS";
     private static final String EXTRA_RELEASE_DATE = "MOVIE_RELEASE_DATE";
+    private static final String EXTRA_MOVIE_ID = "MOVIE_ID";
+
+    private static final int FORECAST_LOADER_ID = 0;
+
+    private MovieViewModel mMovieViewModel;
+
+    private MovieSyncViewModel mMovieSyncViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
         mLoadingIndicator = (ProgressBar) findViewById(R.id.pb_loading_indicator);
 
-        String tempMovie_dbURL = buildUrl(BASE_MOVIEdb_REQUEST_URL);
-        loadMovieData(tempMovie_dbURL);
+        int loaderId = FORECAST_LOADER_ID;
 
         List<Movies> movies = new ArrayList<>();
 
@@ -59,7 +68,38 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
          mMoviesAdapter = new MovieAdapter(movies, this, this);
 
         mRecyclerView.setAdapter(mMoviesAdapter);
+
+        mMovieViewModel = new ViewModelProvider(this).get(MovieViewModel.class);
+
+        mMovieSyncViewModel = new ViewModelProvider(this).get(MovieSyncViewModel.class);
+
+        mMovieSyncViewModel.GetData(this);
+
+        mMovieSyncViewModel.getOutputWorkInfo().observe(this, new Observer<List<WorkInfo>>() {
+            @Override
+            public void onChanged(List<WorkInfo> workInfos) {
+
+                // If there are no matching work info, do nothing
+                if (workInfos == null || workInfos.isEmpty()) {
+                    return;
+                }
+
+                // We only care about the first output status.
+                // Every continuation has only one worker tagged TAG_SYNC_DATA
+                WorkInfo workInfo = workInfos.get(0);
+                Log.i(LOG_TAG, "WorkState: " + workInfo.getState());
+                if (workInfo.getState() == WorkInfo.State.ENQUEUED) {
+                    showWorkFinished();
+                    retrieveMovies();
+                }else {
+                    showWorkInProgress();
+                }
+            }
+        });
+
+
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -76,7 +116,10 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
             openSettingsActivity();
             return true;
         }
-
+        if (id == R.id.action_favourites) {
+            openFavouriteActivity();
+            return true;
+        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -84,7 +127,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     public void onClick(Movies movie) {
 
         Context context = this;
-
         Class destinationClass = MovieDetails.class;
         Intent intentToStartDetailActivity = new Intent(context, destinationClass);
         intentToStartDetailActivity.putExtra(EXTRA_TITLE, movie.getTitle());
@@ -92,70 +134,9 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         intentToStartDetailActivity.putExtra(EXTRA_OVERVIEW, movie.getOverView());
         intentToStartDetailActivity.putExtra(EXTRA_VOTE_AVERAGE, movie.getUserRatings());
         intentToStartDetailActivity.putExtra(EXTRA_RELEASE_DATE, movie.getReleaseDate());
+        intentToStartDetailActivity.putExtra(EXTRA_MOVIE_ID, movie.getMovieID());
 
         startActivity(intentToStartDetailActivity);
-    }
-
-    public class FetchMoviesTask extends AsyncTask<String, Void, List<Movies>> {
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            mLoadingIndicator.setVisibility(View.VISIBLE);
-        }
-
-        @Override
-        protected List<Movies> doInBackground(String... urls) {
-            // Don't perform the request if there are no URLs, or the first URL is null.
-            if (urls.length < 1 || urls[0] == null) {
-                return null;
-            }
-
-            // Create a list of movies.
-            List<Movies> result = NetworkUtils.fetchEarthquakeData(urls[0]);
-            return result;
-        }
-
-        @Override
-        protected void onPostExecute(List<Movies> movies) {
-            mLoadingIndicator.setVisibility(View.INVISIBLE);
-
-            mMoviesAdapter.clear();
-
-            if (movies != null && !movies.isEmpty()) {
-                mMoviesAdapter.setData(movies);
-            }
-        }
-    }
-
-    private void loadMovieData(String theMoviedb_url) {
-        new FetchMoviesTask().execute(theMoviedb_url);
-    }
-
-
-
-    public String buildUrl(String locationQuery) {
-
-        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-
-        //Update URI to Use the User’s Preferred Sort Order
-        String sortBy  = sharedPrefs.getString(
-                getString(R.string.settings_sort_key),
-                getString(R.string.settings_sort_default_value)
-        );
-
-        // parse breaks apart the URI string that's passed into its parameter
-        Uri baseUri = Uri.parse(BASE_MOVIEdb_REQUEST_URL);
-
-        // buildUpon prepares the baseUri that we just parsed so we can add query parameters to it
-        Uri.Builder uriBuilder = baseUri.buildUpon();
-
-        // Append query parameter and its value. For example, the `api-key=someRandomNumber`
-        uriBuilder.appendQueryParameter(getString(R.string.api_key), getString(R.string.api_key_value))
-                .appendQueryParameter(getString(R.string.settings_sort_key), sortBy);
-
-        //https://api.themoviedb.org/3/discover/movie?api_key=someNUmber&sort_by=popularity.desc
-        return uriBuilder.toString();
     }
 
     private void openSettingsActivity(){
@@ -164,4 +145,33 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         Intent intentToStartSettingsActivity = new Intent(context, destinationClass);
         startActivity(intentToStartSettingsActivity);
     }
+
+    private void openFavouriteActivity(){
+        Context context = this;
+        Class destinationClass = FavouriteActivity.class;
+        Intent intentToStartSettingsActivity = new Intent(context, destinationClass);
+        startActivity(intentToStartSettingsActivity);
+    }
+
+    private void retrieveMovies() {
+
+        mMovieViewModel.getUsers(this).observe(this, new Observer<List<Movies>>() {
+            @Override
+            public void onChanged(@Nullable List<Movies> moviesList) {
+                Log.d(LOG_TAG, "Updating List of movies from LiveData in ViewModel");
+                //mMoviesAdapter.setData(movies);
+                mMoviesAdapter.setData(moviesList);
+            }
+        });
+    }
+
+    private void showWorkInProgress() {
+        mLoadingIndicator.setVisibility(View.VISIBLE);
+    }
+
+    private void showWorkFinished() {
+        mLoadingIndicator.setVisibility(View.GONE);
+    }
+
+
 }

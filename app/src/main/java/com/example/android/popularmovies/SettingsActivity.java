@@ -3,12 +3,19 @@ package com.example.android.popularmovies;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
+import android.widget.Toast;
+
+import com.example.android.popularmovies.sync.MovieSyncUtils;
 
 public class SettingsActivity extends AppCompatActivity {
 
@@ -22,8 +29,9 @@ public class SettingsActivity extends AppCompatActivity {
 
 //    public static class MoviesPreferenceFragment extends PreferenceFragment {
     public static class MoviesPreferenceFragment extends PreferenceFragment
-            implements Preference.OnPreferenceChangeListener{
+            implements Preference.OnPreferenceChangeListener, SharedPreferences.OnSharedPreferenceChangeListener{
 
+        private static final String CONN_ERROR = "No Internet Connection";
         @Override
         public void onCreate(@Nullable Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
@@ -41,15 +49,52 @@ public class SettingsActivity extends AppCompatActivity {
     public boolean onPreferenceChange(Preference preference, Object newValue) {
 
         String stringValue = newValue.toString();
+        Toast error = Toast.makeText(getActivity(), CONN_ERROR, Toast.LENGTH_SHORT);
 
-        ListPreference listPreference = (ListPreference) preference;
-        int prefIndex = listPreference.findIndexOfValue(stringValue);
-        if (prefIndex >= 0) {
-            CharSequence[] labels = listPreference.getEntries();
-            preference.setSummary(labels[prefIndex]);
+        if(isConnected()) {
+            ListPreference listPreference = (ListPreference) preference;
+            int prefIndex = listPreference.findIndexOfValue(stringValue);
+            if (prefIndex >= 0) {
+                CharSequence[] labels = listPreference.getEntries();
+                preference.setSummary(labels[prefIndex]);
+            }
         }
-
+        else{
+            error.show();
+            return false;
+        }
         return true;
+    }
+
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        // unregister the preference change listener
+        getPreferenceScreen().getSharedPreferences()
+                .unregisterOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        // register the preference change listener
+        getPreferenceScreen().getSharedPreferences()
+                .registerOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+
+        Activity activity = getActivity();
+        Toast error = Toast.makeText(getActivity(), "Please connect to the Internet", Toast.LENGTH_SHORT);
+
+        if (key.equals(getString(R.string.settings_sort_key))) {
+
+            if(isConnected()) {
+                MovieSyncUtils.startImmediateSync(activity);
+            }
+        }
     }
 
         //Helper Method used in order to update the preference summary when the settings activity
@@ -60,6 +105,14 @@ public class SettingsActivity extends AppCompatActivity {
             String preferenceString = preferences.getString(preference.getKey(), "");
             onPreferenceChange(preference, preferenceString); //calling the event listener that updates the UI
         }
+
+    private boolean isConnected() {
+        // Check for connectivity status
+        ConnectivityManager connMgr = (ConnectivityManager) getActivity().
+                getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = connMgr.getActiveNetworkInfo();
+        return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+    }
 
     }
 

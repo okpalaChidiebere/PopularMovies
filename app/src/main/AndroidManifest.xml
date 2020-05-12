@@ -2,7 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.android.popularmovies">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -10,21 +11,27 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".SettingsActivity"
+        <activity android:name=".FavouriteActivity"></activity>
+        <activity android:name=".MovieReviews" />
+        <activity
+            android:name=".SettingsActivity"
             android:label="@string/settings_title"
-            android:screenOrientation="portrait"
-            android:parentActivityName=".MainActivity">
-        </activity>
-        <activity android:name=".MovieDetails"
             android:parentActivityName=".MainActivity"
-            android:label="@string/movie_details_title"/>
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".MovieDetails"
+            android:label="@string/movie_details_title"
+            android:parentActivityName=".MainActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
+        </activity> <!-- This is required for immediate movies syncs -->
+        <service
+            android:name=".sync.MovieSyncIntentService"
+            android:exported="false" />
     </application>
 
 </manifest>

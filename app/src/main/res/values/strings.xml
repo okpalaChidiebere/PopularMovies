@@ -39,8 +39,46 @@
 
     <!-- Menu item title Strings -->
     <string name="settings_menu_item">Settings</string>
+    <string name="action_movieReview">Movie Reviews</string>
+    <string name="favourite_menu_item">Favorites</string>
     <!-- End Menu item-->
 
     <string name="settings_title">Movies Settings</string>
     <string name="movie_details_title">Movie Details</string>
+
+    <string name="test_review">“Ad Astra” is one of the most cerebral sci-fi films I’ve ever seen.
+        The original story from writer / director James Gray gives an intimate look at the emotional toll that comes from
+        being just one man lost among the stars in the vastness of space. It’s like a more existential version of Terrence Malik’s
+        “Tree of Life,” but set in the outer reaches of our galaxy.\r\n\r\nRoy McBride (Brad Pitt), an astronaut with nerves of steel, travels
+        to Neptune to find his missing hero astronaut father (Tommy Lee Jones). As part of a top secret mission, Roy begins to unravel a mystery and uncover
+        truths that may threaten the survival of Earth. This may sound like a blockbuster action thriller, but it’s not. Instead, the film is an emotionally
+        complex introspective about a man burdened with the sins of his father.\r\n\r\nPitt gives a stunning, understated performance as a man struggling with
+        the psychological toll of isolation and regret. It’s one of his best to date, and it’s nearly impossible not to have a deep emotional connection as you
+        share his character’s established sadness. The father and son dynamic shapes Roy’s life, and he’s never quite gotten over the abandonment issues he’s
+        felt since he was a child. The scenes where Roy and Cliff finally reunite are brief but come from a heartfelt place of forgiveness that grows with the
+        passage of time. It’s the perfect analysis of our own humanity, as we all continue searching with a blind hope to find our footing in the cosmos.\r\n\r\nThe
+        film relies heavily on voiceover narration from Roy, something I normally hate because it feels like lazy storytelling. That isn’t the case here. It works well
+        and is a very effective method that complements the director’s vision. In fact, everything about this film is a success, from Max Richter‘s haunting original score
+        to the special effects and striking cinematography (by Hoyte Van Hoytema), tight direction, and detailed sound design. Gray achieves what he’s going for when every
+        element of the film works together as a whole, and it all is executed in a stunning fashion.\r\n\r\n“Ad Astra” is highly intelligent and melancholy science fiction
+        that will leave a lasting impression on those who can appreciate its sadness and beauty.
+    </string>
+    <string name="text_author">Louisa Moore - Screen Zealots</string>
+    <string name="review_readMore">Read More</string>
+
+    <string name="main_notification_channel_name">Primary</string>
+
+    <!-- SnackBar strings-->
+    <string name="Added_confirmation">Added to Favourites</string>
+    <string name="Removed_confirmation">Removed from Favourites</string>
+    <string name="Action">Action</string>
+    <!-- End SnackBar-->
+
+    <!-- favorite Button -->
+    <string name="marked_favorite">MARKED FAVORITE</string>
+    <string name="notMarked_favorite">MARK AS FAVORITE</string>
+    <!-- End favorite Button-->
+
+    <string name="no_favorite_added">NO MOVIES ADDED</string>
+    <string name="no_reviews">NO REVIEW(S) FOR THIS MOVIE YET</string>
 </resources>
