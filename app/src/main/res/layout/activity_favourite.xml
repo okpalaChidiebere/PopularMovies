@@ -3,19 +3,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MovieReviews">
+    tools:context=".FavouriteActivity">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/tv_recyclerView_moviesReviews"
+        android:id="@+id/recyclerView_favourites"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
     <TextView
-        android:id="@+id/default_review_message"
+        android:id="@+id/default_movies_message"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         android:layout_gravity="center"
-        android:text="@string/no_reviews"
+        android:text="@string/no_favorite_added"
         android:visibility="invisible" />
 
 </FrameLayout>

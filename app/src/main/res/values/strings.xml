@@ -40,6 +40,7 @@
     <!-- Menu item title Strings -->
     <string name="settings_menu_item">Settings</string>
     <string name="action_movieReview">Movie Reviews</string>
+    <string name="favourite_menu_item">Favorites</string>
     <!-- End Menu item-->
 
     <string name="settings_title">Movies Settings</string>
@@ -77,4 +78,7 @@
     <string name="marked_favorite">MARKED FAVORITE</string>
     <string name="notMarked_favorite">MARK AS FAVORITE</string>
     <!-- End favorite Button-->
+
+    <string name="no_favorite_added">NO MOVIES ADDED</string>
+    <string name="no_reviews">NO REVIEW(S) FOR THIS MOVIE YET</string>
 </resources>

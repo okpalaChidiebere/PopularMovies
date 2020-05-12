@@ -11,10 +11,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
 import com.example.android.popularmovies.database.GetMovieIdViewModelFactory;
 import com.example.android.popularmovies.database.GetReviewViewModel;
 import com.example.android.popularmovies.model.Review;
+
+import org.w3c.dom.Text;
 
 import java.util.List;
 
@@ -29,6 +33,8 @@ public class MovieReviews extends AppCompatActivity {
     private GetMovieIdViewModelFactory factory;
     private GetReviewViewModel mReviewViewModel;
 
+    private TextView defaultMessage;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,6 +46,7 @@ public class MovieReviews extends AppCompatActivity {
         setTitle(getString(R.string.action_movieReview)); //page label
 
         mTv_recyclerView_review = (RecyclerView) findViewById(R.id.tv_recyclerView_moviesReviews);
+        defaultMessage = (TextView) findViewById(R.id.default_review_message);
         LinearLayoutManager layoutManager
                 = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         mTv_recyclerView_review.setLayoutManager(layoutManager);
@@ -56,7 +63,7 @@ public class MovieReviews extends AppCompatActivity {
             if (intentThatStartedThisActivity.hasExtra(EXTRA_MOVIE_ID)) {
                 mMovieID = intentThatStartedThisActivity.getIntExtra(EXTRA_MOVIE_ID,0);
 
-                factory = new GetMovieIdViewModelFactory(this, mMovieID, false, true);
+                factory = new GetMovieIdViewModelFactory(this, mMovieID, true, false);
                 loadMovieReviews();
 
             }
@@ -81,8 +88,23 @@ public class MovieReviews extends AppCompatActivity {
             @Override
             public void onChanged(@Nullable List<Review> reviewList) {
                 Log.d(LOG_TAG, "Updating List of Reviews from LiveData in ViewModel");
-                mReviewAdapter.setData(reviewList);
+                if(reviewList.size() != 0) {
+                    MovieReviewListExists();
+                    mReviewAdapter.setData(reviewList);
+                }else{
+                            noMovieReviewList();
+                }
             }
         });
+    }
+
+    private void MovieReviewListExists() {
+        defaultMessage.setVisibility(View.GONE);
+        mTv_recyclerView_review.setVisibility(View.VISIBLE);
+    }
+
+    private void noMovieReviewList(){
+        defaultMessage.setVisibility(View.VISIBLE);
+        mTv_recyclerView_review.setVisibility(View.GONE);
     }
 }

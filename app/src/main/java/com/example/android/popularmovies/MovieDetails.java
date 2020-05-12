@@ -60,7 +60,7 @@ public class MovieDetails extends AppCompatActivity implements TrailerAdapter.Tr
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_details);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        this.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         //layout views
         TextView titleView, descriptionView, releaseDateView, ratingsView;
@@ -208,6 +208,12 @@ public class MovieDetails extends AppCompatActivity implements TrailerAdapter.Tr
             return true;
 
         }
+
+        if (id == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+
         return super.onOptionsItemSelected(item);
     }
 

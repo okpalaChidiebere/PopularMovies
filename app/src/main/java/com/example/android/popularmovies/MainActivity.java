@@ -143,6 +143,10 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
             openSettingsActivity();
             return true;
         }
+        if (id == R.id.action_favourites) {
+            openFavouriteActivity();
+            return true;
+        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -244,6 +248,13 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     private void openSettingsActivity(){
         Context context = this;
         Class destinationClass = SettingsActivity.class;
+        Intent intentToStartSettingsActivity = new Intent(context, destinationClass);
+        startActivity(intentToStartSettingsActivity);
+    }
+
+    private void openFavouriteActivity(){
+        Context context = this;
+        Class destinationClass = FavouriteActivity.class;
         Intent intentToStartSettingsActivity = new Intent(context, destinationClass);
         startActivity(intentToStartSettingsActivity);
     }

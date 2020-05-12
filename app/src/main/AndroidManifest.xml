@@ -11,12 +11,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MovieReviews"></activity>
+        <activity android:name=".FavouriteActivity"></activity>
+        <activity android:name=".MovieReviews" />
         <activity
             android:name=".SettingsActivity"
             android:label="@string/settings_title"
             android:parentActivityName=".MainActivity"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".MovieDetails"
             android:label="@string/movie_details_title"
@@ -27,9 +28,7 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-
-        <!--This is required for immediate movies syncs -->
+        </activity> <!-- This is required for immediate movies syncs -->
         <service
             android:name=".sync.MovieSyncIntentService"
             android:exported="false" />
