@@ -45,7 +45,7 @@ public class MovieRepository {
     }
 
     public void rePopulateTables(String sortMovie) {
-        new rePopulateDatabaseAsyncTask(mMovieDao, mTrailerDao, mReviewDao, sortMovie).execute();
+        new rePopulateDatabaseAsyncTask(mMovieDao, mTrailerDao, mReviewDao, mFavouriteDao, sortMovie).execute();
     }
 
     private static class rePopulateDatabaseAsyncTask extends AsyncTask<Void, Void, Void> {
@@ -54,13 +54,15 @@ public class MovieRepository {
         private ReviewDao mReviewDao;
         private TrailerDao mTrailerDao;
         private String sortMovieValue;
+        private FavouriteDao mFavouriteDao;
 
         //rePopulateDatabaseAsyncTask() {
-        rePopulateDatabaseAsyncTask(MovieDao dao, TrailerDao tDao, ReviewDao rDao, String sortMovie) {
+        rePopulateDatabaseAsyncTask(MovieDao dao, TrailerDao tDao, ReviewDao rDao, FavouriteDao fDao, String sortMovie) {
             mMovieDao = dao;
             mReviewDao = rDao;
             mTrailerDao = tDao;
             sortMovieValue = sortMovie;
+            mFavouriteDao = fDao;
         }
 
         @Override
@@ -69,6 +71,7 @@ public class MovieRepository {
             mMovieDao.deleteAll();
             mReviewDao.deleteAll();
             mTrailerDao.deleteAll();
+            mFavouriteDao.deleteAll();
 
             String url = NetworkUtils.buildMovieUrl(sortMovieValue);
             List<Movies> movies = NetworkUtils.fetchEarthquakeData(url);

@@ -16,7 +16,8 @@ public interface FavouriteDao {
 
     @Query("SELECT movies.movie_id, movies.title, movies.thumbnail, movies.overview, movies.rating, movies.release_date, movies.api_movie_id\n" +
             "FROM favourite\n" +
-            "INNER JOIN movies ON favourite.movie_id = movies.movie_id")
+            "INNER JOIN movies ON favourite.movie_id = movies.movie_id\n" +
+            "ORDER BY favourite.movie_id DESC")
     LiveData<List<Movies>> getAllFavourite();
 
     @Query("SELECT COUNT(movie_id) FROM favourite WHERE movie_id = :id LIMIT 1")
