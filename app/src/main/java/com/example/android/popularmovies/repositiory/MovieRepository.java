@@ -6,9 +6,11 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.example.android.popularmovies.database.AppDatabase;
+import com.example.android.popularmovies.database.FavouriteDao;
 import com.example.android.popularmovies.database.MovieDao;
 import com.example.android.popularmovies.database.ReviewDao;
 import com.example.android.popularmovies.database.TrailerDao;
+import com.example.android.popularmovies.model.Favourite;
 import com.example.android.popularmovies.model.Movies;
 import com.example.android.popularmovies.model.Review;
 import com.example.android.popularmovies.model.Trailer;
@@ -25,6 +27,9 @@ public class MovieRepository {
     private TrailerDao mTrailerDao;
     private LiveData<List<Trailer>> mTrailers;
     private static long mMovieid;
+    private FavouriteDao mFavouriteDao;
+
+
     private static final String LOG_TAG = MovieRepository.class.getSimpleName();
 
 
@@ -36,6 +41,7 @@ public class MovieRepository {
         mMovieDao = db.movieDao();
         mReviewDao = db.reviewDao();
         mTrailerDao = db.trailerDao();
+        mFavouriteDao = db.favouriteDao();
     }
 
     public void rePopulateTables(String sortMovie) {
@@ -88,28 +94,47 @@ public class MovieRepository {
         }
     }
 
-    public long getMovieID(long apiMovieID){
+    public void addMovieToFavourites(int movieID){
 
-        new getMovieIDAsyncTask(mMovieDao, apiMovieID).execute();
-        return mMovieid;
+        new FavouriteAsyncTask(mFavouriteDao, movieID, true).execute();
     }
 
-    private static class getMovieIDAsyncTask extends AsyncTask<Void, Void, Void> {
+    public void removeMovieToFavourites(int movieID){
 
-        private MovieDao mMovieDao;
-        private long mApiId;
+        new FavouriteAsyncTask(mFavouriteDao, movieID, false).execute();
+    }
 
-        getMovieIDAsyncTask(MovieDao dao, long apiID){
-            mMovieDao = dao;
-            mApiId = apiID;
+
+
+    private static class FavouriteAsyncTask extends AsyncTask<Void, Void, Void> {
+
+        private FavouriteDao mFavouriteDao;
+        private int mMovieID;
+        private boolean mIfAdd;
+
+        FavouriteAsyncTask(FavouriteDao dao, int mID, boolean ifAdd){
+            mFavouriteDao = dao;
+            mMovieID = mID;
+            mIfAdd = ifAdd;
         }
 
         @Override
         protected Void doInBackground(final Void... voids) {
-            mMovieid = mMovieDao.getLocalDBMovieId(mApiId);
+            if(mIfAdd) {
+                Favourite favourite = new Favourite(mMovieID);
+                mFavouriteDao.insertFavourite(favourite);
+            }else{
+                mFavouriteDao.deleteFavouriteByMovieId(mMovieID);
+            }
+
+
             return null;
         }
 
+    }
+
+    public LiveData<Integer> checkMovieFavourites(int movieID) {
+        return mFavouriteDao.getFavouriteById(movieID);
     }
 
 

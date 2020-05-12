@@ -11,14 +11,15 @@ public class GetMovieIdViewModelFactory extends ViewModelProvider.NewInstanceFac
     private final int mMovieApiID;
     private final Context context;
     private final boolean mIsReview;
+    private final boolean mIsTrailer;
 
-    public GetMovieIdViewModelFactory(Context mContext, int movieId, boolean isReview) {
+    public GetMovieIdViewModelFactory(Context mContext, int movieId, boolean isReview, boolean isTrailer) {
         //public GetMovieIdViewModelFactory(AppDatabase database, int movieId) {
         //mDb = database;
         mMovieApiID = movieId;
         context = mContext;
         mIsReview = isReview;
-
+        mIsTrailer = isTrailer;
 
     }
 
@@ -28,8 +29,11 @@ public class GetMovieIdViewModelFactory extends ViewModelProvider.NewInstanceFac
         //return (T) new GetTrailerViewModel(mDb, movieId);
         if(mIsReview){
             return (T) new GetReviewViewModel(context, mMovieApiID);
-        }else {
+        }else if(mIsTrailer){
             return (T) new GetTrailerViewModel(context, mMovieApiID);
+        }
+        else{
+            return (T) new FavouriteViewModel(context, mMovieApiID);
         }
     }
 }

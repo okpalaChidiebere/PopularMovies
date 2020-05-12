@@ -60,8 +60,7 @@
                     android:layout_margin="38dp"
                     android:layout_alignParentBottom="true"
                     android:background="@color/colorAccent"
-                    android:onClick="markMovieAsFavorite"
-                    android:text="@string/notMarked_favorite"/>
+                    android:onClick="markMovieAsFavorite" />
                 </RelativeLayout>
             </LinearLayout>
 

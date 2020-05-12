@@ -56,7 +56,7 @@ public class MovieReviews extends AppCompatActivity {
             if (intentThatStartedThisActivity.hasExtra(EXTRA_MOVIE_ID)) {
                 mMovieID = intentThatStartedThisActivity.getIntExtra(EXTRA_MOVIE_ID,0);
 
-                factory = new GetMovieIdViewModelFactory(this, mMovieID, true);
+                factory = new GetMovieIdViewModelFactory(this, mMovieID, false, true);
                 loadMovieReviews();
 
             }

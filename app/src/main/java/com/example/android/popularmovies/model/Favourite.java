@@ -2,6 +2,7 @@ package com.example.android.popularmovies.model;
 
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 
@@ -26,6 +27,10 @@ public class Favourite {
         this.movie_id = tMovieID;
     }
 
+    public Favourite(int tMovieID){
+        this.movie_id = tMovieID;
+    }
+
     // getters and setters are ignored for brevity but they are required for Room to work.
     public int getFavourite_id(){
         return favourite_id;
@@ -43,6 +48,5 @@ public class Favourite {
     public void setMovie_id(int tId){
         this.movie_id = tId;
     }
-
 
 }

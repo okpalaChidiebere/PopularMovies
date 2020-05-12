@@ -19,9 +19,11 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.android.popularmovies.database.FavouriteViewModel;
 import com.example.android.popularmovies.database.GetMovieIdViewModelFactory;
 import com.example.android.popularmovies.database.GetTrailerViewModel;
 import com.example.android.popularmovies.model.Trailer;
+import com.example.android.popularmovies.repositiory.MovieRepository;
 import com.google.android.material.snackbar.Snackbar;
 import com.squareup.picasso.Picasso;
 
@@ -45,7 +47,9 @@ public class MovieDetails extends AppCompatActivity implements TrailerAdapter.Tr
     private  TrailerAdapter mTrailerAdapter;
 
     private GetMovieIdViewModelFactory factory;
+    private GetMovieIdViewModelFactory favouriteFactory;
     private GetTrailerViewModel mTrailerViewModel;
+    private FavouriteViewModel mFavouriteViewModel;
 
     private int intentMovieReviewId;
     private Button markFavourite;
@@ -134,9 +138,12 @@ public class MovieDetails extends AppCompatActivity implements TrailerAdapter.Tr
             if (intentThatStartedThisActivity.hasExtra(EXTRA_MOVIE_ID)) {
                 movieID = intentThatStartedThisActivity.getLongExtra(EXTRA_MOVIE_ID,0);
                 intentMovieReviewId = (int)movieID; //to passed as an explicit intent to get movie reviews
-                factory = new GetMovieIdViewModelFactory(this, (int)movieID, false);
+                factory = new GetMovieIdViewModelFactory(this, (int)movieID, false, true);
+                favouriteFactory = new GetMovieIdViewModelFactory(this, (int)movieID, false, false);
                 loadMovieTrailers();
             }
+
+            initializeButtonText();
 
         }
 
@@ -152,15 +159,16 @@ public class MovieDetails extends AppCompatActivity implements TrailerAdapter.Tr
                     //mFavoriteIcon.setImageResource(R.drawable.favorite_icon_on);
                     confirmation = getString(R.string.Added_confirmation);
                     buttonText = getString(R.string.marked_favorite);
+                    new MovieRepository(this).addMovieToFavourites(movieID);
                 }else{
                     confirmation = getString(R.string.Removed_confirmation);
                     buttonText = getString(R.string.notMarked_favorite);
+                    new MovieRepository(this).removeMovieToFavourites(movieID);
                 }
                 Snackbar.make(view, confirmation, Snackbar.LENGTH_LONG)
                         .setAction(getString(R.string.Action), null).show();
                 markFavourite.setText(buttonText);
 
-                // TODO: Add movie into favorite room table
                 break;
             default:
         }
@@ -212,6 +220,23 @@ public class MovieDetails extends AppCompatActivity implements TrailerAdapter.Tr
             public void onChanged(@Nullable List<Trailer> trailerList) {
                 Log.d(LOG_TAG, "Updating List of trailers from LiveData in ViewModel");
                 mTrailerAdapter.setData(trailerList);
+            }
+        });
+    }
+
+    public void initializeButtonText(){
+       mFavouriteViewModel = new ViewModelProvider(this, favouriteFactory).get(FavouriteViewModel.class);
+
+        mFavouriteViewModel.getFinal().observe(this, new Observer<Integer>() {
+            @Override
+            public void onChanged(@Nullable Integer integer) {
+                //Log.d(LOG_TAG, "Movie_ID "+ intentMovieReviewId);
+                Log.d(LOG_TAG, "Updating action button favorite based on viewModel data "+ integer);
+                if(Integer.valueOf(integer) != 0) {
+                    markFavourite.setText(getString(R.string.marked_favorite));
+                }else{
+                    markFavourite.setText(getString(R.string.notMarked_favorite));
+                }
             }
         });
     }
