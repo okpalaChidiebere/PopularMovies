@@ -75,7 +75,7 @@
     <!-- End SnackBar-->
 
     <!-- favorite Button -->
-    <string name="marked_favorite">MARKED FAVORITE</string>
+    <string name="marked_favorite">REMOVE FROM FAVORITE</string>
     <string name="notMarked_favorite">MARK AS FAVORITE</string>
     <!-- End favorite Button-->
 
