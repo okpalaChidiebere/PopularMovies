@@ -8,7 +8,8 @@
     android:paddingLeft="6dp"
     android:paddingTop="6dp"
     android:paddingRight="6dp"
-    android:paddingBottom="6dp">
+    android:paddingBottom="6dp"
+    android:background="?android:attr/selectableItemBackground">
 
     <TextView
         android:id="@+id/tv_trailerName"

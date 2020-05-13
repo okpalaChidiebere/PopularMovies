@@ -5,6 +5,7 @@ import android.content.Context;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
+@SuppressWarnings("unchecked")
 public class GetMovieIdViewModelFactory extends ViewModelProvider.NewInstanceFactory{
 
     //private final AppDatabase mDb;

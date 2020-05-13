@@ -54,6 +54,8 @@ public class MovieRepository {
         private TrailerDao mTrailerDao;
         private String sortMovieValue;
         private FavouriteDao mFavouriteDao;
+        List<Review> reviews;
+        List<Trailer> trailers;
 
         //rePopulateDatabaseAsyncTask() {
         rePopulateDatabaseAsyncTask(MovieDao dao, TrailerDao tDao, ReviewDao rDao, FavouriteDao fDao, String sortMovie) {
@@ -79,13 +81,13 @@ public class MovieRepository {
                 long movieRowId = mMovieDao.insertMovie(movies.get(i));
                 Log.d(LOG_TAG, "MOVIE_ID: " + movieRowId);
 
-                List<Trailer> trailers = NetworkUtils.fetchTrailersData(NetworkUtils.buildTrailerUrl(movies.get(i).getAPIMovieID()));
+                trailers = NetworkUtils.fetchTrailersData(NetworkUtils.buildTrailerUrl(movies.get(i).getAPIMovieID()));
                 for (int j = 0; j < trailers.size(); j++) {
                     Trailer trailer = new Trailer((int)movieRowId, trailers.get(j).getName(), trailers.get(j).getThumbnail());
                     mTrailerDao.insertTrailer(trailer);
                 }
 
-                List<Review> reviews = NetworkUtils.fetchReviewsData(NetworkUtils.buildReviewUrl(movies.get(i).getAPIMovieID()));
+                reviews = NetworkUtils.fetchReviewsData(NetworkUtils.buildReviewUrl(movies.get(i).getAPIMovieID()));
                 for (int j = 0; j < reviews.size(); j++) {
                     Review review = new Review((int)movieRowId, reviews.get(j).getAuthor(), reviews.get(j).getContent());
                     mReviewDao.insertReview(review);
