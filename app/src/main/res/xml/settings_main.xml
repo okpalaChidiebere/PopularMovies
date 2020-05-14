@@ -3,7 +3,7 @@
     android:title="@string/settings_title">
 
     <ListPreference
-        android:defaultValue="@string/settings_sort_default_value"
+        android:defaultValue="@string/pref_sort_default_value"
         android:entries="@array/settings_sort_by_labels"
         android:entryValues="@array/settings_sort_by_values"
         android:key="@string/settings_sort_key"

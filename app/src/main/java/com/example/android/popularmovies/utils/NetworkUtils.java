@@ -183,11 +183,11 @@ public class NetworkUtils {
         Uri.Builder uriBuilder = baseUri.buildUpon();
 
         // Append query parameter and its value. For example, the `api-key=someRandomNumber`
-        uriBuilder.appendEncodedPath(DISCOVER_MOVIE)
-                .appendQueryParameter(API_KEY, API_KEY_VALUE)
-                .appendQueryParameter(SORT_BY_KEY, sortBy);
+        uriBuilder.appendEncodedPath(MOVIE_URL)
+                .appendEncodedPath(sortBy)
+                .appendQueryParameter(API_KEY, API_KEY_VALUE);
 
-        //https://api.themoviedb.org/3/discover/movie?api_key=someNUmber&sort_by=popularity.desc
+        //https://api.themoviedb.org/3/movie/porpularity?api_key=someNUmber
         return uriBuilder.toString();
     }
 

@@ -26,7 +26,8 @@ public class MovieWorkManager extends Worker {
 
         // Do the work here--in this case, upload the images.
         Context context = getApplicationContext();
-        MovieSyncTask.syncMovie(context);
+        //MovieSyncTask.syncMovie(context);
+        MovieSyncUtils.startImmediateSync(context);
         NotificationUtils.notifyUserOfNewWeather(context);
 
         // Indicate whether the task finished successfully with the Result
