@@ -14,18 +14,18 @@
     <string name="settings_sort_key" translatable="false">sort_by</string> <!-- Used in preference screen and uri query build-->
     <!-- Values-->
     <string name="api_key_value">3bc5452a3c521649c0b418627ea7ddab</string>
-    <string name="settings_sort_default_value" translatable="false">@string/settings_sort_popularity_value</string> <!-- Used in preference screen and uri query build-->
+    <string name="pref_sort_default_value" translatable="false">@string/pref_sort_popular_value</string> <!-- Used in preference screen and uri query build-->
     <!-- End build URL-->
 
     <!-- Label values for sort by popularity option [CHAR LIMIT=20] -->
-    <string name="settings_sort_popularity_value" translatable="false">popularity.desc</string>
-    <string name="settings_sort_popularity_asc_value" translatable="false">popularity.asc</string>
+    <string name="pref_sort_popular_value" translatable="false">popular</string>
+    <string name="pref_sort_rated_value" translatable="false">top_rated</string>
 
     <!-- Put exclusive String Values for preference fragment screen -->
     <!-- Radiobutton select option-->
     <string-array name="settings_sort_by_values">
-        <item>@string/settings_sort_popularity_value</item>
-        <item>@string/settings_sort_popularity_asc_value</item>
+        <item>@string/pref_sort_popular_value</item>
+        <item>@string/pref_sort_rated_value</item>
     </string-array>
 
     <!-- Preference fragment titles-->
@@ -33,8 +33,8 @@
 
     <!-- Labels for radioButton-->
     <string-array name="settings_sort_by_labels">
-        <item>Descending</item>
-        <item>Ascending</item>
+        <item>Popularity</item>
+        <item>Top Rated</item>
     </string-array>
     <!-- End preference Screen strings-->
 
